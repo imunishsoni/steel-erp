@@ -48,6 +48,11 @@ class Employees extends BaseController
         ]);
     }
 
+    public function new()
+    {
+        return $this->create();
+    }
+
     public function store()
     {
         $rules = [

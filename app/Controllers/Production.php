@@ -50,6 +50,12 @@ class Production extends BaseController
         $userModel = new UserModel();
         $engineers = $userModel->where('is_active', 1)->findAll();
 
+        $selectedSoId = $this->request->getGet('so_id');
+        $selectedSO = null;
+        if ($selectedSoId) {
+            $selectedSO = $soModel->getDetails($selectedSoId);
+        }
+
         // Generate next Job number: JOB-YYMM-001
         $prefix = 'JOB-' . date('ym') . '-';
         $latest = $this->jobModel->like('job_no', $prefix, 'after')->orderBy('id', 'DESC')->first();
@@ -60,12 +66,19 @@ class Production extends BaseController
         $autoJobNo = $prefix . str_pad($nextSeq, 3, '0', STR_PAD_LEFT);
 
         return $this->render('production/form', [
-            'pageTitle'   => 'Create Fabrication Job Order',
-            'job'         => null,
-            'salesOrders' => $salesOrders,
-            'engineers'   => $engineers,
-            'autoJobNo'   => $autoJobNo,
+            'pageTitle'    => 'Create Fabrication Job Order',
+            'job'          => null,
+            'salesOrders'  => $salesOrders,
+            'engineers'    => $engineers,
+            'autoJobNo'    => $autoJobNo,
+            'selectedSoId' => $selectedSoId,
+            'selectedSO'   => $selectedSO,
         ]);
+    }
+
+    public function new()
+    {
+        return $this->create();
     }
 
     public function store()

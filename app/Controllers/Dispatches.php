@@ -38,6 +38,7 @@ class Dispatches extends BaseController
 
     public function create($soId = null)
     {
+        $soId = $soId ?: $this->request->getGet('so_id');
         $soModel = new SalesOrderModel();
         $salesOrders = $soModel->whereIn('status', ['confirmed', 'in_production', 'ready_for_dispatch', 'completed'])->findAll();
 
@@ -65,6 +66,11 @@ class Dispatches extends BaseController
             'selectedSO'  => $selectedSO,
             'autoDcNo'    => $autoDcNo,
         ]);
+    }
+
+    public function new($soId = null)
+    {
+        return $this->create($soId);
     }
 
     public function store()

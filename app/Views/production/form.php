@@ -29,7 +29,7 @@
                     <select name="sales_order_id" class="form-select select2">
                         <option value="">-- Direct Job / Internal Fabrication --</option>
                         <?php foreach ($salesOrders as $so): ?>
-                            <option value="<?= $so['id'] ?>" <?= old('sales_order_id') == $so['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $so['id'] ?>" <?= (old('sales_order_id', $selectedSoId ?? '') == $so['id']) ? 'selected' : '' ?>>
                                 <?= esc($so['so_no']) ?> - <?= esc($so['client_name'] ?? 'Client') ?>
                             </option>
                         <?php endforeach; ?>
@@ -47,7 +47,7 @@
 
                 <div class="col-md-6">
                     <label class="form-label required">Project Title / Equipment Name</label>
-                    <input type="text" name="project_name" class="form-control" placeholder="e.g. ESP Casing & Flue Gas Ducts for Unit #4" value="<?= old('project_name') ?>" required>
+                    <input type="text" name="project_name" class="form-control" placeholder="e.g. ESP Casing & Flue Gas Ducts for Unit #4" value="<?= old('project_name', $selectedSO['project_name'] ?? '') ?>" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Start Date</label>

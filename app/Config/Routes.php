@@ -115,8 +115,10 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Goods Receipt Notes (GRN)
     $routes->group('grn', static function ($routes) {
         $routes->get('', 'Grn::index');
-        $routes->get('create', 'Grn::create');
-        $routes->post('store', 'Grn::store');
+        $routes->get('create', 'Grn::new');
+        $routes->get('new', 'Grn::new');
+        $routes->post('store', 'Grn::create');
+        $routes->post('create', 'Grn::create');
         $routes->get('view/(:num)', 'Grn::view/$1');
     });
 
@@ -124,7 +126,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->group('production', static function ($routes) {
         $routes->get('', 'Production::index');
         $routes->get('create', 'Production::create');
+        $routes->get('new', 'Production::create');
         $routes->post('store', 'Production::store');
+        $routes->post('create', 'Production::store');
         $routes->get('view/(:num)', 'Production::view/$1');
         $routes->post('update-status/(:num)', 'Production::updateStatus/$1');
         $routes->post('update-item-progress/(:num)', 'Production::updateItemProgress/$1');
@@ -138,7 +142,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->group('dispatches', static function ($routes) {
         $routes->get('', 'Dispatches::index');
         $routes->get('create', 'Dispatches::create');
+        $routes->get('new', 'Dispatches::create');
         $routes->post('store', 'Dispatches::store');
+        $routes->post('create', 'Dispatches::store');
         $routes->get('view/(:num)', 'Dispatches::view/$1');
         $routes->post('update-status/(:num)', 'Dispatches::updateStatus/$1');
         $routes->get('print/(:num)', 'Dispatches::print/$1');
@@ -148,7 +154,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->group('invoices', static function ($routes) {
         $routes->get('', 'Invoices::index');
         $routes->get('create', 'Invoices::create');
+        $routes->get('new', 'Invoices::create');
         $routes->post('store', 'Invoices::store');
+        $routes->post('create', 'Invoices::store');
         $routes->get('view/(:num)', 'Invoices::view/$1');
         $routes->get('print/(:num)', 'Invoices::print/$1');
     });
@@ -167,7 +175,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->group('employees', static function ($routes) {
         $routes->get('', 'Employees::index');
         $routes->get('create', 'Employees::create');
+        $routes->get('new', 'Employees::create');
         $routes->post('store', 'Employees::store');
+        $routes->post('create', 'Employees::store');
         $routes->get('edit/(:num)', 'Employees::edit/$1');
         $routes->post('update/(:num)', 'Employees::update/$1');
     });
