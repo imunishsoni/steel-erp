@@ -1,8 +1,27 @@
 # Bharat Heavy Steel ERP 🏗️⚙️
 ### Enterprise Resource Management System for Heavy Steel Engineering & Fabrication
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?logo=github)](https://imunishsoni.github.io/steel-erp/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 > **Tailored for Indian Heavy Structural Steel Fabricators supplying Power, Sugar, and Cement Plants.**  
 > Built with **XAMPP, PHP 8.1+, CodeIgniter 4, MySQL, JavaScript, jQuery, Bootstrap 5, CSS & HTML**.
+
+---
+
+## 🌐 Live Interactive Demo on GitHub Pages
+
+Experience the full ERP lifecycle directly in your browser without needing local Apache or MySQL installed:
+
+👉 **[Launch Steel ERP Live Showcase (imunishsoni.github.io/steel-erp)](https://imunishsoni.github.io/steel-erp/)**
+
+* 📊 **Executive Dashboard**: Live KPI cards, monthly fabrication vs. dispatch tonnage charts (MT), and sector split (Power vs Sugar vs Cement).
+* 🏢 **Client & Sector Master**: Preconfigured PSU and private clients (NTPC Ramagundam, Adani Power Mundra, UltraTech Cement, Bajaj Hindusthan Sugar, Shree Cement).
+* 🗃️ **Plate Yard & Traceability**: Heat Number and Mill Test Certificate (MTC) tracking from SAIL, Tata Steel, and JSPL.
+* ⚙️ **Shop Floor Job Orders**: Multi-stage route cards (Oxy-Cutting &rarr; Fit-Up &rarr; SAW/SMAW Welding &rarr; NDT UT/RT Testing &rarr; Blasting SA 2.5 &rarr; PU Coating).
+* 🚚 **Weighbridge & Logistics**: Computerized gross/tare/net tonnage calculation and Delivery Challans (Rule 55 CGST Rules) with E-Way bills.
+* 🧾 **GST Billing**: Indian GST Tax Invoicing (HSN 730890) with CGST/SGST/IGST breakups, IRN hashes, and printable formats.
+* 💾 **In-Browser Persistence**: Runs with interactive client-side state saved to `localStorage` with sample data reset capability.
 
 ---
 

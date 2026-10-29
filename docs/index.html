@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heavy Steel ERP | Indian Industrial Fabrication Management (Power, Sugar & Cement)</title>
+    <meta name="description" content="Industrial Enterprise Resource Planning system for heavy steel fabricators supplying Indian thermal power, sugar, and cement plants.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-icons/bootstrap-icons.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="assets/plugins/datatables/dataTables.bootstrap5.min.css">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="assets/plugins/select2/select2.min.css">
+    <link rel="stylesheet" href="assets/plugins/select2/select2-bootstrap-5-theme.min.css">
+    <!-- Custom Steel ERP CSS -->
+    <link rel="stylesheet" href="assets/css/steel-erp.css">
+
+    <style>
+        .demo-banner {
+            background: linear-gradient(90deg, #0f1f33 0%, #1e3a5f 50%, #2563eb 100%);
+            color: #ffffff;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-bottom: 2px solid #f97316;
+        }
+        .stat-card-highlight {
+            border-left: 4px solid #f97316;
+        }
+        .stage-badge {
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .print-sheet {
+            background: #ffffff;
+            color: #000000;
+            padding: 30px;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal.show, .modal.show .modal-content, .modal.show .print-sheet, .modal.show .print-sheet * {
+                visibility: visible;
+            }
+            .modal.show {
+                position: absolute;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GITHUB PAGES SHOWCASE NOTICE BANNER -->
+    <div class="demo-banner d-flex flex-wrap justify-content-between align-items-center no-print">
+        <div class="d-flex align-items-center my-1">
+            <span class="badge bg-warning text-dark me-2 font-monospace fw-bold"><i class="bi bi-github"></i> GITHUB PAGES DEMO</span>
+            <span><strong>Steel ERP:</strong> Interactive Client-Side Showcase for Heavy Steel Fabrication (Thermal Power, Sugar Mills & Cement Plants)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 my-1">
+            <button id="btnResetDemoData" class="btn btn-xs btn-outline-light py-1 px-2" style="font-size: 0.75rem;" title="Reset sample database in localStorage">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset Data
+            </button>
+            <a href="#docs" class="btn btn-xs btn-light py-1 px-2 fw-semibold" style="font-size: 0.75rem;">
+                <i class="bi bi-journal-code"></i> Architecture &amp; Setup Guide
+            </a>
+            <a href="https://github.com/imunishsoni/steel-erp" target="_blank" rel="noopener" class="btn btn-xs btn-warning text-dark py-1 px-2 fw-bold" style="font-size: 0.75rem;">
+                <i class="bi bi-code-slash"></i> View Repo
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div id="wrapper">
+
+        <!-- SIDEBAR -->
+        <nav id="sidebar" class="no-print">
+            <a href="#dashboard" class="sidebar-brand">
+                <img src="assets/img/logo.svg" alt="Steel ERP" width="28" height="28" class="me-2">
+                <div>
+                    <div style="line-height: 1.1;">STEEL ERP</div>
+                    <div style="font-size: 0.65rem; font-weight: normal; color: #9ca3af; text-transform: uppercase;">Heavy Fabrication</div>
+                </div>
+            </a>
+
+            <!-- User Info Strip -->
+            <div class="px-3 py-2 border-bottom border-secondary border-opacity-25 bg-black bg-opacity-20 d-flex align-items-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 34px; height: 34px; font-size: 0.85rem;">
+                    A
+                </div>
+                <div class="overflow-hidden">
+                    <div class="text-white text-truncate fw-semibold" style="font-size: 0.85rem;">Admin / Works GM</div>
+                    <div class="badge bg-warning text-dark text-uppercase" style="font-size: 0.6rem;">Full Access</div>
+                </div>
+            </div>
+
+            <!-- Plant Live Status -->
+            <div class="px-3 py-2 bg-dark bg-opacity-50 text-white-50 border-bottom border-secondary border-opacity-25" style="font-size: 0.7rem;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span><i class="bi bi-broadcast text-success"></i> Heavy Bay 1:</span>
+                    <span class="text-success fw-bold">Active (Oxy/SAW)</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-broadcast text-warning"></i> Bay 2 (Blasting):</span>
+                    <span class="text-warning fw-bold">SA 2.5 In Progress</span>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <!-- CORE -->
+                <div class="sidebar-heading">Operations</div>
+                <a href="#dashboard" class="sidebar-nav-link active">
+                    <i class="bi bi-speedometer2"></i> Executive Dashboard
+                </a>
+
+                <!-- SALES & CRM -->
+                <div class="sidebar-heading">Sales &amp; Projects</div>
+                <a href="#clients" class="sidebar-nav-link">
+                    <i class="bi bi-building"></i> Clients &amp; Plants
+                </a>
+                <a href="#quotations" class="sidebar-nav-link">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Enquiries &amp; Quotations
+                </a>
+
+                <!-- MATERIAL & YARD -->
+                <div class="sidebar-heading">Plate Yard &amp; Stock</div>
+                <a href="#materials" class="sidebar-nav-link">
+                    <i class="bi bi-grid-3x3-gap"></i> Yard Inventory &amp; MTC
+                </a>
+                <a href="#qaqc" class="sidebar-nav-link">
+                    <i class="bi bi-shield-check"></i> QA / QC &amp; NDT Records
+                </a>
+
+                <!-- PRODUCTION FLOOR -->
+                <div class="sidebar-heading">Shop Floor</div>
+                <a href="#production" class="sidebar-nav-link">
+                    <i class="bi bi-gear-wide-connected"></i> Job Orders &amp; Route Cards
+                </a>
+
+                <!-- LOGISTICS & ACCOUNTS -->
+                <div class="sidebar-heading">Dispatch &amp; Accounts</div>
+                <a href="#dispatch" class="sidebar-nav-link">
+                    <i class="bi bi-truck"></i> Weighbridge &amp; Dispatches
+                </a>
+                <a href="#invoices" class="sidebar-nav-link">
+                    <i class="bi bi-receipt"></i> GST Invoices &amp; E-Way
+                </a>
+                <a href="#reports" class="sidebar-nav-link">
+                    <i class="bi bi-graph-up-arrow"></i> Output &amp; Analytics
+                </a>
+
+                <!-- TECHNICAL REFERENCE -->
+                <div class="sidebar-heading">Developer Docs</div>
+                <a href="#docs" class="sidebar-nav-link">
+                    <i class="bi bi-journal-code"></i> CI4 Backend &amp; Schema
+                </a>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <div id="content" class="d-flex flex-column flex-grow-1">
+
+            <!-- TOP NAVBAR -->
+            <nav class="navbar navbar-expand navbar-light bg-white border-bottom px-3 py-2 sticky-top no-print">
+                <button class="btn btn-outline-secondary btn-sm me-3" id="sidebarToggle" type="button" aria-label="Toggle Sidebar">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark d-none d-sm-block">Heavy Steel Fabricators Pvt. Ltd.</h5>
+                    <span class="badge bg-primary ms-2 d-none d-md-inline-block">Jaipur Works</span>
+                </div>
+
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <button id="btnOpenNewJobModal" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> New Job Order
+                    </button>
+                    <button id="btnOpenNewDCModal" class="btn btn-sm btn-outline-secondary d-none d-md-inline-block">
+                        <i class="bi bi-truck me-1"></i> New Dispatch
+                    </button>
+                    <button id="btnOpenNewInvoiceModal" class="btn btn-sm btn-outline-secondary d-none d-lg-inline-block">
+                        <i class="bi bi-receipt me-1"></i> New Invoice
+                    </button>
+                    <div class="border-start ps-2 ms-1">
+                        <span class="badge bg-light text-dark border"><i class="bi bi-hdd-network text-success"></i> LocalStorage DB Active</span>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- TOAST CONTAINER -->
+            <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1090;"></div>
+
+            <!-- VIEW 1: DASHBOARD -->
+            <div id="view-dashboard" class="app-view-section container-fluid py-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Executive Plant Operations Dashboard</h4>
+                        <p class="text-muted small mb-0">Fabrication metrics for Power Plant Boilers, Sugar Mill Evaporators &amp; Cement Kiln Structures</p>
+                    </div>
+                    <div class="d-flex gap-2 mt-2 mt-sm-0">
+                        <span class="badge bg-light text-dark border p-2">FY 2026-27 | Period: October</span>
+                    </div>
+                </div>
+
+                <!-- KPI CARDS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 stat-card-highlight">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Active Job Orders</div>
+                                        <h3 class="fw-bold text-dark mb-0" id="kpiActiveJobs">4</h3>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded">
+                                        <i class="bi bi-gear-fill fs-4"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-2 small text-muted">
+                                    <span class="text-success fw-bold"><i class="bi bi-arrow-up"></i> 100% On-Track</span> across 3 fabrication bays
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 stat-card-highlight" style="border-left-color: #2563eb !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Yard Raw Stock</div>
+                                        <h3 class="fw-bold text-primary mb-0" id="kpiStockMT">372.5 MT</h3>
+                                    </div>
+                                    <div class="bg-info bg-opacity-10 text-info p-3 rounded">
+                                        <i class="bi bi-grid-3x3-gap-fill fs-4"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-2 small text-muted">
+                                    <span>IS 2062 &amp; SA 516 Plates with 100% MTC</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 stat-card-highlight" style="border-left-color: #10b981 !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Monthly Invoicing</div>
+                                        <h3 class="fw-bold text-success mb-0" id="kpiInvoiced">₹54,28,000</h3>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 text-success p-3 rounded">
+                                        <i class="bi bi-currency-rupee fs-4"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-2 small text-muted">
+                                    <span>GST HSN 730890 (E-Way Bills validated)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 stat-card-highlight" style="border-left-color: #f59e0b !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Dispatched Tonnage</div>
+                                        <h3 class="fw-bold text-warning text-dark mb-0" id="kpiDispatchedMT">52.0 MT</h3>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded">
+                                        <i class="bi bi-truck-flatbed fs-4"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-2 small text-muted">
+                                    <span>Multi-axle trailers with weighbridge slips</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart-line text-primary me-2"></i>Monthly Fabrication vs Dispatch Output (Metric Tonnes)</h6>
+                                <span class="badge bg-light text-dark border">Jaipur Works</span>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 280px; position: relative;">
+                                    <canvas id="fabricationOutputChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-pie-chart text-primary me-2"></i>Supply Sector Share</h6>
+                                <span class="badge bg-light text-dark border">By Tonnage</span>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 240px; position: relative;">
+                                    <canvas id="sectorDistributionChart"></canvas>
+                                </div>
+                                <div class="mt-2 text-center small text-muted">
+                                    Power Plants (NTPC, Adani) | Sugar (Bajaj, Renuka) | Cement (UltraTech, Shree)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT ACTIVE JOBS & QUICK ACTIONS -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-hammer text-primary me-2"></i>Active Shop Floor Job Orders</h6>
+                                <a href="#production" class="btn btn-sm btn-outline-primary">View All Job Orders</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" id="dashboardJobsTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Job Order #</th>
+                                            <th>Client &amp; Assembly Description</th>
+                                            <th>Sector</th>
+                                            <th>Tonnage</th>
+                                            <th>Stage &amp; Progress</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamically Populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: CLIENTS & PLANTS -->
+            <div id="view-clients" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-building text-primary me-2"></i>Clients &amp; Industrial Plant Accounts</h4>
+                        <p class="text-muted small mb-0">Thermal Power Stations, Integrated Sugar Mills &amp; Major Cement Plants across India</p>
+                    </div>
+                    <div class="d-flex gap-2 mt-2 mt-sm-0">
+                        <button id="btnOpenNewClientModal" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i> Add New Client
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Pills -->
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-outline-secondary client-filter-btn active" data-sector="all">All Sectors</button>
+                    <button class="btn btn-sm btn-outline-primary client-filter-btn" data-sector="power_plant">Thermal Power Plants</button>
+                    <button class="btn btn-sm btn-outline-success client-filter-btn" data-sector="sugar_mill">Sugar Mills &amp; Refineries</button>
+                    <button class="btn btn-sm btn-outline-warning client-filter-btn" data-sector="cement_plant">Cement Manufacturing</button>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="clientsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Client Code</th>
+                                    <th>Company &amp; Plant Location</th>
+                                    <th>Sector</th>
+                                    <th>Chief Engineer / Contact</th>
+                                    <th>GSTIN</th>
+                                    <th>Credit Limit</th>
+                                    <th class="text-center">Active Jobs</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: ENQUIRIES & QUOTATIONS -->
+            <div id="view-quotations" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-file-earmark-spreadsheet text-primary me-2"></i>Enquiries &amp; Fabrication Quotations</h4>
+                        <p class="text-muted small mb-0">Technical Estimation, BOQ Costing &amp; GST Estimates for Structural &amp; Plate Fabrication</p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="quotationsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Quotation #</th>
+                                    <th>Date</th>
+                                    <th>Client &amp; Scope of Work</th>
+                                    <th>Sector</th>
+                                    <th>Est. Tonnage</th>
+                                    <th>Total Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: PLATE YARD & INVENTORY -->
+            <div id="view-materials" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-grid-3x3-gap text-primary me-2"></i>Raw Material Yard &amp; MTC Traceability</h4>
+                        <p class="text-muted small mb-0">Structural steel plates, rolled sections, boiler plates and consumables with Mill Test Certificates</p>
+                    </div>
+                    <div>
+                        <button id="btnOpenNewGRNModal" class="btn btn-primary btn-sm">
+                            <i class="bi bi-box-arrow-in-down me-1"></i> Record Inward GRN
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="inventoryTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Code</th>
+                                    <th>Description &amp; Steel Mill</th>
+                                    <th>Category</th>
+                                    <th>Heat Number</th>
+                                    <th>Mill Test Cert (MTC)</th>
+                                    <th>Location Bay</th>
+                                    <th>Stock Level</th>
+                                    <th>Rate / MT</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 5: QA / QC & NDT RECORDS -->
+            <div id="view-qaqc" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Quality Assurance (QA/QC) &amp; NDT Clearance</h4>
+                        <p class="text-muted small mb-0">Non-Destructive Testing (UT, RT, DPT, MPT) records complying with AWS D1.1, ASME Sec VIII &amp; IS 2062</p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="qaqcTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Report No</th>
+                                    <th>Date</th>
+                                    <th>Job Order</th>
+                                    <th>Joint ID &amp; Thickness</th>
+                                    <th>Method</th>
+                                    <th>Acceptance Standard</th>
+                                    <th>Result</th>
+                                    <th>NDT Inspector &amp; TPI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: PRODUCTION FLOOR / JOB ORDERS -->
+            <div id="view-production" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-gear-wide-connected text-primary me-2"></i>Shop Floor Job Orders &amp; Production Route Cards</h4>
+                        <p class="text-muted small mb-0">Fabrication workflow from Cutting, Fit-Up, SAW Welding, NDT, Blasting (SA 2.5) to Final Coating</p>
+                    </div>
+                    <div>
+                        <button id="btnOpenNewJobModal2" class="btn btn-primary btn-sm" onclick="$('#btnOpenNewJobModal').click();">
+                            <i class="bi bi-plus-circle me-1"></i> Create New Job Order
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="productionJobsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Job Order #</th>
+                                    <th>Client, Project &amp; Drawing</th>
+                                    <th>Sector</th>
+                                    <th>Tonnage (MT)</th>
+                                    <th>Stage &amp; Progress</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 7: WEIGHBRIDGE & DISPATCHES -->
+            <div id="view-dispatch" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-truck text-primary me-2"></i>Weighbridge Slips &amp; Delivery Challans</h4>
+                        <p class="text-muted small mb-0">Multi-axle trailer dispatches with computerized gross/tare/net weighment and GST E-Way bills</p>
+                    </div>
+                    <div>
+                        <button id="btnOpenNewDCModal2" class="btn btn-primary btn-sm" onclick="$('#btnOpenNewDCModal').click();">
+                            <i class="bi bi-plus-circle me-1"></i> Generate Delivery Challan
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="dispatchesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Challan No</th>
+                                    <th>Date</th>
+                                    <th>Consignee &amp; Destination</th>
+                                    <th>Vehicle &amp; Transporter</th>
+                                    <th>E-Way Bill</th>
+                                    <th>Net Weight</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 8: GST INVOICES & BILLING -->
+            <div id="view-invoices" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-receipt text-primary me-2"></i>GST Tax Invoices &amp; Billing (HSN 730890)</h4>
+                        <p class="text-muted small mb-0">Compliant Indian GST Tax Invoices (CGST + SGST 9% or IGST 18%) with E-Invoicing IRN hash</p>
+                    </div>
+                    <div>
+                        <button id="btnOpenNewInvoiceModal2" class="btn btn-primary btn-sm" onclick="$('#btnOpenNewInvoiceModal').click();">
+                            <i class="bi bi-plus-circle me-1"></i> Generate GST Invoice
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="invoicesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Date</th>
+                                    <th>Client / Buyer</th>
+                                    <th>HSN Code</th>
+                                    <th>Taxable Value</th>
+                                    <th>GST Breakup</th>
+                                    <th>Total Invoice Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 9: REPORTS & ANALYTICS -->
+            <div id="view-reports" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Plant Output, Dispatch &amp; Scrap Analytics</h4>
+                        <p class="text-muted small mb-0">Fabrication yield analysis, steel plate burning scrap ratios, and client dispatch metrics</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3">
+                            <div class="text-muted small text-uppercase">Monthly Fabrication Target</div>
+                            <div class="d-flex align-items-baseline justify-content-between mt-2">
+                                <h3 class="fw-bold text-dark mb-0">520 / 600 MT</h3>
+                                <span class="badge bg-success">86.6% Achieved</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 86.6%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3">
+                            <div class="text-muted small text-uppercase">Oxy-Fuel / Plasma Scrap Ratio</div>
+                            <div class="d-flex align-items-baseline justify-content-between mt-2">
+                                <h3 class="fw-bold text-dark mb-0">4.8%</h3>
+                                <span class="badge bg-primary">Within 6.0% Limit</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-primary" style="width: 48%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3">
+                            <div class="text-muted small text-uppercase">NDT Welding Acceptance Rate</div>
+                            <div class="d-flex align-items-baseline justify-content-between mt-2">
+                                <h3 class="fw-bold text-dark mb-0">99.2%</h3>
+                                <span class="badge bg-success">TPI Approved</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 99.2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-file-earmark-text text-primary me-2"></i>October 2026 Monthly Fabrication &amp; Dispatch Summary</h6>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sector / Industry</th>
+                                    <th>Major Equipment Supplied</th>
+                                    <th>Fabricated (MT)</th>
+                                    <th>Dispatched (MT)</th>
+                                    <th>Invoiced Value</th>
+                                    <th>Primary Client</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-primary">Power Plants</span></td>
+                                    <td>ESP Casings, Internal Baffles, Boiler Structural Girders</td>
+                                    <td>285.0 MT</td>
+                                    <td>260.0 MT</td>
+                                    <td>₹2,84,40,000</td>
+                                    <td>NTPC Ramagundam &amp; Adani Power</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning text-dark">Cement Plants</span></td>
+                                    <td>Kiln Preheater Cyclones, Clinker Cooler Chutes, Riser Ducts</td>
+                                    <td>140.0 MT</td>
+                                    <td>135.0 MT</td>
+                                    <td>₹1,48,68,000</td>
+                                    <td>UltraTech Cement &amp; Shree Cement</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success">Sugar Mills</span></td>
+                                    <td>Evaporator Shells, Vacuum Pans, Bagasse Conveyor Galleries</td>
+                                    <td>95.0 MT</td>
+                                    <td>95.0 MT</td>
+                                    <td>₹1,09,72,000</td>
+                                    <td>Bajaj Hindusthan &amp; Shree Renuka</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 10: ARCHITECTURE & SETUP GUIDE -->
+            <div id="view-docs" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-journal-code text-primary me-2"></i>CodeIgniter 4 Architecture &amp; On-Premise XAMPP Setup</h4>
+                        <p class="text-muted small mb-0">Full Technical Documentation for Running the PHP/MySQL Heavy Steel Fabrication ERP</p>
+                    </div>
+                    <div>
+                        <a href="https://github.com/imunishsoni/steel-erp" target="_blank" rel="noopener" class="btn btn-outline-dark btn-sm">
+                            <i class="bi bi-github me-1"></i> GitHub Repository
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-laptop text-primary me-2"></i>Local Development Setup (XAMPP / PHP 8.1+)</h6>
+                            </div>
+                            <div class="card-body">
+                                <ol class="ps-3 small lh-lg">
+                                    <li><strong>Clone the repository:</strong><br>
+                                        <code>git clone https://github.com/imunishsoni/steel-erp.git</code>
+                                    </li>
+                                    <li><strong>Start XAMPP:</strong> Ensure Apache and MySQL modules are started in XAMPP Control Panel.</li>
+                                    <li><strong>Create Database:</strong><br>
+                                        Open <code>http://localhost/phpmyadmin</code>, create database <code>steel_erp</code>, and import <code>database/steel_erp.sql</code>.
+                                    </li>
+                                    <li><strong>Configure Environment:</strong><br>
+                                        Copy <code>.env.example</code> to <code>.env</code> and update database credentials:
+                                        <pre class="bg-light p-2 rounded mt-1 font-monospace" style="font-size: 0.75rem;">
+database.default.hostname = localhost
+database.default.database = steel_erp
+database.default.username = root
+database.default.password = 
+app.baseURL = 'http://localhost:8080/'</pre>
+                                    </li>
+                                    <li><strong>Run CodeIgniter 4 Spark Server:</strong><br>
+                                        <code>php spark serve --port 8080</code>
+                                    </li>
+                                    <li><strong>Access in Browser:</strong> Open <code>http://localhost:8080</code>. Log in with:
+                                        <div class="mt-1"><code>Username: admin | Password: admin123</code></div>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-diagram-3 text-primary me-2"></i>Industrial Architecture &amp; Indian Compliance</h6>
+                            </div>
+                            <div class="card-body small">
+                                <h6 class="fw-bold text-primary">Indian Steel Fabrication Workflow:</h6>
+                                <p class="text-muted mb-2">1. <strong>Tender &amp; Quotation:</strong> Estimation based on ISMB/ISMC standard rolling weights and plate cutting nested areas.</p>
+                                <p class="text-muted mb-2">2. <strong>Material Inward &amp; MTC:</strong> Heat-number level traceability mapped from SAIL / Tata / Jindal test certificates.</p>
+                                <p class="text-muted mb-2">3. <strong>Shop Floor Stages:</strong> Oxy-Cutting &rarr; Fitment &rarr; SAW/SMAW Welding &rarr; NDT (UT/RT/DPT) &rarr; Blasting SA 2.5 &rarr; PU Painting.</p>
+                                <p class="text-muted mb-2">4. <strong>Weighbridge &amp; DC:</strong> Automatic tare and gross weighment recording for multi-axle trailers.</p>
+                                <p class="text-muted mb-2">5. <strong>GST Billing:</strong> HSN 730890 (Structures of iron or steel) with 18% GST (CGST+SGST for intra-state, IGST for inter-state) and E-Way bill generation.</p>
+
+                                <hr>
+                                <h6 class="fw-bold text-primary">GitHub Pages Static Deployment:</h6>
+                                <p class="text-muted mb-0">This GitHub Pages build packages a zero-dependency, self-contained client-side single page app under <code>/docs</code> with pre-bundled Bootstrap 5, Chart.js, DataTables, and Select2 libraries, coupled with a GitHub Actions workflow (<code>.github/workflows/deploy-pages.yml</code>) for automatic deployment on push.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-top py-3 px-4 mt-auto no-print">
+                <div class="d-flex flex-wrap justify-content-between align-items-center small text-muted">
+                    <div>
+                        &copy; 2026 <strong>Heavy Steel Fabricators Pvt. Ltd.</strong> | Jaipur, Rajasthan | GSTIN: <code>08AABCU9603R1ZM</code>
+                    </div>
+                    <div>
+                        Licensed under <a href="https://github.com/imunishsoni/steel-erp/blob/main/LICENSE" target="_blank" rel="noopener" class="text-decoration-none fw-semibold">MIT License</a> | Hosted on <strong>GitHub Pages</strong>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODALS (Interactive Client-side Functionality)
+         ============================================================ -->
+
+    <!-- MODAL: CREATE NEW JOB ORDER -->
+    <div class="modal fade" id="newJobModal" tabindex="-1" aria-labelledby="newJobModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newJobModalLabel"><i class="bi bi-hammer me-2"></i>Create New Fabrication Job Order</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCreateJob">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Job Order Number</label>
+                                <input type="text" class="form-control font-monospace" id="newJobNo" readonly required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Select Client / Plant *</label>
+                                <select class="form-select" id="jobClientSelect" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Industry Sector</label>
+                                <input type="text" class="form-control" id="newJobSector" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Total Tonnage (MT) *</label>
+                                <input type="number" step="0.1" class="form-control" id="newJobTonnage" placeholder="e.g. 45.0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Customer Drawing No *</label>
+                                <input type="text" class="form-control" id="newJobDrawingNo" placeholder="e.g. DWG-BLR-019" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Job Title &amp; Assembly Description *</label>
+                                <input type="text" class="form-control" id="newJobTitle" placeholder="e.g. 500MW Thermal ESP Casing Panels &amp; Hopper Stiffeners" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Fabrication Bay</label>
+                                <select class="form-select" id="newJobBay">
+                                    <option value="Heavy Bay 1">Heavy Bay 1 (Heavy SAW &amp; Girders)</option>
+                                    <option value="Bay 2">Bay 2 (Plate Rolling &amp; Cyclones)</option>
+                                    <option value="Structural Bay 3">Structural Bay 3 (Trusses &amp; Galleries)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Priority</label>
+                                <select class="form-select" id="newJobPriority">
+                                    <option value="High">High</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Medium">Medium</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Start Date</label>
+                                <input type="date" class="form-control" id="newJobStartDate" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Delivery Target Date</label>
+                                <input type="date" class="form-control" id="newJobTargetDate" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Special Quality / NDT Notes</label>
+                                <input type="text" class="form-control" id="newJobNotes" placeholder="e.g. 100% UT on butt joints per AWS D1.1; TPI inspection by SGS">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-circle me-1"></i> Create Job Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VIEW JOB TRAVELER & STAGES -->
+    <div class="modal fade" id="jobTravelerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="bi bi-diagram-3 me-2"></i>Production Route Card / Traveler - <span id="modalTravelerJobNo" class="font-monospace text-warning"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded mb-3">
+                        <div class="row g-2 small">
+                            <div class="col-md-8"><strong>Description:</strong> <span id="modalTravelerTitle"></span></div>
+                            <div class="col-md-4"><strong>Client:</strong> <span id="modalTravelerClient"></span></div>
+                            <div class="col-md-4"><strong>Total Tonnage:</strong> <span id="modalTravelerTonnage"></span></div>
+                            <div class="col-md-4"><strong>Drawing No:</strong> <code id="modalTravelerDrawing"></code></div>
+                            <div class="col-md-4"><strong>Assigned Bay:</strong> <span id="modalTravelerBay"></span></div>
+                            <div class="col-12 mt-1"><strong>Fabrication Notes:</strong> <span id="modalTravelerNotes" class="text-muted"></span></div>
+                        </div>
+                    </div>
+                    <h6 class="fw-bold mb-2">Shop Floor Stage Clearance Traveler:</h6>
+                    <ul class="list-group list-group-flush border rounded" id="modalTravelerStagesList">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD NEW CLIENT -->
+    <div class="modal fade" id="newClientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-building-add me-2"></i>Add New Client Account</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCreateClient">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Client Code</label>
+                                <input type="text" class="form-control font-monospace" id="newClientCode" readonly required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Company / Entity Name *</label>
+                                <input type="text" class="form-control" id="newClientName" placeholder="e.g. Tata Power Limited" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Sector *</label>
+                                <select class="form-select" id="newClientSector" required>
+                                    <option value="power_plant">Thermal / Hydro Power Plant</option>
+                                    <option value="sugar_mill">Sugar Mill &amp; Refinery</option>
+                                    <option value="cement_plant">Cement Manufacturing</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">GSTIN (15 Digits) *</label>
+                                <input type="text" class="form-control font-monospace text-uppercase" id="newClientGstin" placeholder="e.g. 08AAACX1234F1Z9" required maxlength="15">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Credit Limit (INR)</label>
+                                <input type="number" class="form-control" id="newClientCredit" placeholder="10000000" value="15000000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Contact Person / Chief Engg</label>
+                                <input type="text" class="form-control" id="newClientContact" placeholder="Er. R. K. Sharma">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Mobile Phone</label>
+                                <input type="text" class="form-control" id="newClientPhone" placeholder="9829012345">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Email</label>
+                                <input type="email" class="form-control" id="newClientEmail" placeholder="procurement@client.in">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">City / Plant Location</label>
+                                <input type="text" class="form-control" id="newClientCity" placeholder="e.g. Mundra, Kutch">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">State</label>
+                                <input type="text" class="form-control" id="newClientState" placeholder="e.g. Gujarat">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Plant Technical Specifications / Notes</label>
+                                <input type="text" class="form-control" id="newClientNotes" placeholder="e.g. Requires boiler structures to ASME Sec VIII with TPI clearance">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-circle me-1"></i> Save Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VIEW CLIENT DETAILS -->
+    <div class="modal fade" id="clientDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="bi bi-building me-2"></i>Client Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="fw-bold text-primary mb-1" id="clientDetailName"></h5>
+                    <div class="badge bg-secondary mb-3" id="clientDetailSector"></div>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between"><strong>Client Code:</strong> <span id="clientDetailCode"></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>GSTIN:</strong> <code id="clientDetailGstin"></code></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Contact Person:</strong> <span id="clientDetailContact"></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Phone:</strong> <span id="clientDetailPhone"></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Email:</strong> <span id="clientDetailEmail"></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Plant Address:</strong> <span id="clientDetailAddress"></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Approved Credit Limit:</strong> <span id="clientDetailCredit" class="text-success fw-bold"></span></li>
+                        <li class="list-group-item"><strong>Notes:</strong> <div id="clientDetailNotes" class="text-muted mt-1"></div></li>
+                    </ul>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RECORD INWARD GRN -->
+    <div class="modal fade" id="newGRNModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-box-arrow-in-down me-2"></i>Record Inward Material GRN (Steel Plates &amp; Sections)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCreateGRN">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Item Code</label>
+                                <input type="text" class="form-control font-monospace" id="newMatCode" readonly required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Material Specification &amp; Dimension *</label>
+                                <input type="text" class="form-control" id="newMatName" placeholder="e.g. SA 516 Gr 70 Boiler Plate (28mm x 2000 x 9000)" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Category</label>
+                                <select class="form-select" id="newMatCategory">
+                                    <option value="Boiler Quality Plates">Boiler Quality Plates</option>
+                                    <option value="Steel Plates">Mild Steel Plates (IS 2062)</option>
+                                    <option value="Structural Rolled Sections">Structural Rolled Sections (Beams/Channels)</option>
+                                    <option value="Welding Consumables">Welding Consumables (E7018 / SAW Wire)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Manufacturer / Primary Steel Mill *</label>
+                                <input type="text" class="form-control" id="newMatMill" placeholder="e.g. SAIL Bhilai / Tata Steel / JSPL" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Heat / Cast Number *</label>
+                                <input type="text" class="form-control font-monospace text-danger fw-bold" id="newMatHeatNo" placeholder="e.g. BH-9941-BQ" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Mill Test Cert (MTC) Number *</label>
+                                <input type="text" class="form-control font-monospace" id="newMatMtcNo" placeholder="e.g. MTC/SAIL/2026/7710" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Storage Yard Bay</label>
+                                <select class="form-select" id="newMatBay">
+                                    <option value="Yard Bay A">Yard Bay A (Plate Stacking)</option>
+                                    <option value="Yard Bay B">Yard Bay B (Boiler &amp; Alloy Plates)</option>
+                                    <option value="Yard Bay C">Yard Bay C (Structural Rolled Beams)</option>
+                                    <option value="Store Rack S-1">Store Rack S-1 (Electrodes &amp; Flux)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Quantity Received (MT) *</label>
+                                <input type="number" step="0.1" class="form-control" id="newMatTonnage" placeholder="25.0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Purchase Rate per MT (INR)</label>
+                                <input type="number" class="form-control" id="newMatRate" placeholder="68000" value="68000">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-circle me-1"></i> Inward Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GENERATE DELIVERY CHALLAN -->
+    <div class="modal fade" id="newDCModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-truck me-2"></i>Generate Delivery Challan &amp; Weighbridge Gate Pass</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCreateDC">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Delivery Challan #</label>
+                                <input type="text" class="form-control font-monospace" id="newDCNo" readonly required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Dispatch Date</label>
+                                <input type="date" class="form-control" id="newDCDate" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">E-Way Bill Number *</label>
+                                <input type="text" class="form-control font-monospace" id="newEwayBill" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Consignee Client *</label>
+                                <select class="form-select" id="dcClientSelect" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Reference Job Order</label>
+                                <input type="text" class="form-control font-monospace" id="newDCJobNo" value="JOB-2627-001">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Destination Delivery Address</label>
+                                <input type="text" class="form-control" id="newDCDestination" placeholder="e.g. NTPC Ramagundam STPP Site, Telangana" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Trailer Vehicle No *</label>
+                                <input type="text" class="form-control font-monospace text-uppercase" id="newDCVehicle" placeholder="RJ-14-GC-8842" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Transporter Company</label>
+                                <input type="text" class="form-control" id="newDCTransporter" placeholder="Jaipur Golden Transport Co." value="Jaipur Golden Transport Co.">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Driver Name &amp; Phone</label>
+                                <input type="text" class="form-control" id="newDCDriverName" placeholder="Balram Gurjar (9829988112)">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Gross Weighment (MT)</label>
+                                <input type="number" step="0.01" class="form-control" id="newDCGrossWt" placeholder="38.50" value="38.50">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Tare Weight (MT)</label>
+                                <input type="number" step="0.01" class="form-control" id="newDCTareWt" placeholder="18.50" value="18.50">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">No. of Assemblies / Packages</label>
+                                <input type="number" class="form-control" id="newDCPackages" placeholder="6" value="6">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Gate Pass Remarks</label>
+                                <input type="text" class="form-control" id="newDCRemarks" placeholder="Lashed with high-tensile chains and rubber padding.">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-truck me-1"></i> Issue Delivery Challan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PRINT DELIVERY CHALLAN -->
+    <div class="modal fade" id="printDCModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-dark text-white no-print">
+                    <h5 class="modal-title"><i class="bi bi-printer me-2"></i>Print Delivery Challan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="print-sheet">
+                        <div class="border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark">HEAVY STEEL FABRICATORS PVT. LTD.</h4>
+                                <div class="small text-muted">Plot No. 45, Industrial Area Phase-II, Jaipur, Rajasthan - 302022</div>
+                                <div class="small"><strong>GSTIN:</strong> 08AABCU9603R1ZM | <strong>State:</strong> 08-Rajasthan</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-secondary p-2 fs-6">DELIVERY CHALLAN</div>
+                                <div class="small text-muted mt-1">(Under Rule 55 of CGST Rules)</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 small">
+                            <div class="col-6">
+                                <div><strong>Challan No:</strong> <span id="printDcNumber" class="font-monospace fw-bold"></span></div>
+                                <div><strong>Date:</strong> <span id="printDcDate"></span></div>
+                                <div><strong>E-Way Bill:</strong> <span id="printDcEway" class="font-monospace"></span></div>
+                                <div><strong>Job Reference:</strong> <span id="printDcJobRef"></span></div>
+                            </div>
+                            <div class="col-6">
+                                <div><strong>Consignee:</strong> <span id="printDcClient" class="fw-bold"></span></div>
+                                <div><strong>Destination:</strong> <span id="printDcDest"></span></div>
+                                <div><strong>Vehicle No:</strong> <span id="printDcVehicle" class="font-monospace fw-bold"></span></div>
+                                <div><strong>Transporter:</strong> <span id="printDcTransporter"></span></div>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered small mb-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Gross Weight</th>
+                                    <th>Tare Weight</th>
+                                    <th>Net Dispatch Weight</th>
+                                    <th>Packages</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="printDcGross"></td>
+                                    <td id="printDcTare"></td>
+                                    <td id="printDcNet" class="fw-bold fs-6 text-primary"></td>
+                                    <td id="printDcPackages"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="p-2 bg-light border rounded small mb-4">
+                            <strong>Weighbridge &amp; Security Note:</strong>
+                            <div id="printDcRemarks" class="text-muted mt-1"></div>
+                        </div>
+
+                        <div class="row text-center pt-4 small" style="margin-top: 50px;">
+                            <div class="col-4 border-top pt-2">Security / Gate Officer</div>
+                            <div class="col-4 border-top pt-2">Transporter / Driver Signature</div>
+                            <div class="col-4 border-top pt-2">For Heavy Steel Fabricators Pvt. Ltd.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light no-print">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm do-browser-print"><i class="bi bi-printer me-1"></i> Print / Save PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GENERATE GST TAX INVOICE -->
+    <div class="modal fade" id="newInvoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-receipt me-2"></i>Generate GST Tax Invoice (HSN 730890)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCreateInvoice">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Tax Invoice #</label>
+                                <input type="text" class="form-control font-monospace" id="newInvNo" readonly required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Invoice Date</label>
+                                <input type="date" class="form-control" id="newInvDate" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Dispatch DC Reference</label>
+                                <input type="text" class="form-control font-monospace" id="newInvDcRef" value="DC-2627-001">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Select Client / Buyer *</label>
+                                <select class="form-select" id="invClientSelect" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Supply Type</label>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="newInvIsInterstate" checked>
+                                    <label class="form-check-label small" for="newInvIsInterstate">Inter-State (IGST 18%)</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Description of Fabricated Goods (HSN 730890)</label>
+                                <input type="text" class="form-control" id="newInvDescription" placeholder="Fabricated Heavy Structural Steel Assemblies &amp; Ducting" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Dispatched Tonnage (MT) *</label>
+                                <input type="number" step="0.01" class="form-control" id="newInvWeight" placeholder="20.0" value="20.0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Rate per MT (INR) *</label>
+                                <input type="number" class="form-control" id="newInvRate" placeholder="88000" value="88000" required>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-2 bg-light rounded text-center">
+                                    <div class="small text-muted">Estimated Total</div>
+                                    <div class="fw-bold fs-6 text-primary" id="calcTotal">₹20,76,800</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-circle me-1"></i> Issue Tax Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PRINT GST TAX INVOICE -->
+    <div class="modal fade" id="printInvModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-dark text-white no-print">
+                    <h5 class="modal-title"><i class="bi bi-printer me-2"></i>Print GST Tax Invoice</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="print-sheet">
+                        <div class="border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark">HEAVY STEEL FABRICATORS PVT. LTD.</h4>
+                                <div class="small text-muted">Plot No. 45, Industrial Area Phase-II, Jaipur, Rajasthan - 302022</div>
+                                <div class="small"><strong>GSTIN:</strong> 08AABCU9603R1ZM | <strong>PAN:</strong> AABCU9603R</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-primary p-2 fs-6">TAX INVOICE</div>
+                                <div class="small text-muted mt-1">(Under Section 31 of CGST Act)</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 small">
+                            <div class="col-6">
+                                <div><strong>Invoice No:</strong> <span id="printInvNo" class="font-monospace fw-bold text-primary"></span></div>
+                                <div><strong>Date:</strong> <span id="printInvDate"></span></div>
+                                <div><strong>Challan Ref:</strong> <span id="printInvDcRef"></span></div>
+                            </div>
+                            <div class="col-6">
+                                <div><strong>Billed To:</strong> <span id="printInvClient" class="fw-bold"></span></div>
+                                <div><strong>Client GSTIN:</strong> <code id="printInvGstin"></code></div>
+                                <div><strong>Place of Supply:</strong> <span id="printInvState"></span></div>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered small mb-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th>HSN</th>
+                                    <th>Qty (MT)</th>
+                                    <th>Rate / MT</th>
+                                    <th class="text-end">Taxable Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="printInvDesc"></td>
+                                    <td>730890</td>
+                                    <td id="printInvWeight"></td>
+                                    <td id="printInvRate"></td>
+                                    <td class="text-end fw-bold" id="printInvTaxable"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot id="printInvTaxBreakup">
+                                <!-- Populated dynamically -->
+                            </tfoot>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center p-2 bg-light border rounded mb-3">
+                            <div><strong>Grand Total (INR):</strong></div>
+                            <div class="fw-bold fs-5 text-primary" id="printInvTotal"></div>
+                        </div>
+
+                        <div class="row g-2 small mb-4">
+                            <div class="col-6">
+                                <strong>Bank Account Details:</strong>
+                                <div>Bank: HDFC Bank Ltd, Industrial Estate, Jaipur</div>
+                                <div>A/C No: <code>50200088991122</code> | IFSC: <code>HDFC0000054</code></div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <div>For Heavy Steel Fabricators Pvt. Ltd.</div>
+                                <div style="margin-top: 40px;"><strong>Authorized Signatory</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light no-print">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm do-browser-print"><i class="bi bi-printer me-1"></i> Print / Save PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUIRED JAVASCRIPT LIBS -->
+    <!-- jQuery -->
+    <script src="assets/plugins/jquery.min.js"></script>
+    <!-- Bootstrap 5 Bundle -->
+    <script src="assets/plugins/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="assets/plugins/chartjs/chart.umd.min.js"></script>
+    <!-- DataTables -->
+    <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/plugins/datatables/dataTables.bootstrap5.min.js"></script>
+    <!-- Select2 -->
+    <script src="assets/plugins/select2/select2.min.js"></script>
+    <!-- Custom Steel ERP Scripts -->
+    <script src="assets/js/steel-erp.js"></script>
+    <!-- Demo Showcase Logic & State Management -->
+    <script src="assets/js/demo-app.js"></script>
+
+</body>
+</html>
