@@ -219,4 +219,4 @@ All accounts come pre-configured with the default password: **`Admin@123`**
 ---
 
 ## 📄 License
-Enterprise Commercial Application. Developed for Bharat Heavy Steel Fabricators Ltd.
+This project is open-source software licensed under the [MIT License](LICENSE).
