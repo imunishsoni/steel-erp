@@ -1405,6 +1405,72 @@ LOCK TABLES `vendors` WRITE;
 INSERT INTO `vendors` VALUES (1,'VEN-STL-001','Steel Authority of India Ltd (SAIL)','B. K. Mohapatra (Branch Mgr)','bso.jaipur@sail.in','0141-2367788','9437012345','raw_material','BSO Jaipur, Nehru Place','Tonk Road','Jaipur','Rajasthan','302015','India','08AAACS4115G1ZS','AAACS4115G','LC at sight / 100% Advance against PI','State Bank of India','30012345678','SBIN0004128','Primary Steel Producer - IS2062 E250 / E350 Plates and Structural Beams',1,5,1,'2026-10-28 17:14:10','2026-10-28 17:14:10'),(2,'VEN-STL-002','Jindal Steel & Power Ltd (JSPL)','Amit Singhal (Key Account Mgr)','delhi.sales@jindalsteel.com','011-41462000','9810055443','raw_material','Jindal Centre, 12 Bhikaiji Cama Place','Sector 1','New Delhi','Delhi','110066','India','07AAACJ0732A1Z1','AAACJ0732A','100% against Proforma / Advance','HDFC Bank','50200012345678','HDFC0000003','Heavy structural columns, Universal Beams and SA516 Gr 70 boiler plates',1,5,1,'2026-10-28 17:14:10','2026-10-28 17:14:10'),(3,'VEN-WLD-001','ESAB India Limited','C. Sundaram (Area Sales Mgr)','north.sales@esab.co.in','0129-4081000','9818044332','consumables','Plot 13, Sector 6, Industrial Area','Mathura Road','Faridabad','Haryana','121006','India','06AAACE0371E1Z0','AAACE0371E','30 Days Credit','Citibank NA','0345678901','CITI0000002','AWS E7018 Electrodes, MIG Spools ER70S-6, Submerged Arc Welding Flux',1,5,1,'2026-10-28 17:14:10','2026-10-28 17:14:10'),(4,'VEN-PNT-001','Asian Paints Industrial Coatings','Deepak Arora (Technical Rep)','industrial.north@asianpaints.com','01274-245000','9811099887','consumables','Plot 55, Bawal Industrial Area','Phase 1','Rewari','Haryana','123501','India','06AAACA2144P1Z3','AAACA2144P','30 Days Net','ICICI Bank','000705001234','ICIC0000007','High performance Red Oxide Zinc Phosphate Primer, Epoxy MIO, PU top coats',1,4,1,'2026-10-28 17:14:10','2026-10-28 17:14:10'),(5,'VEN-FST-001','Unbrako (Deepak Fasteners Ltd)','Gurpreet Singh (Sales Head)','sales@deepakfasteners.com','0161-5182000','9814033221','consumables','4th Floor, First Mall','The Mall','Ludhiana','Punjab','141001','India','03AAACD3396D1ZZ','AAACD3396D','45 Days Credit','Punjab National Bank','0123002100045678','PUNB0012300','High Tensile Grade 8.8, 10.9 Foundation Bolts, Hex Bolts and Structural Nuts',1,5,1,'2026-10-28 17:14:10','2026-10-28 17:14:10'),(6,'VEN-LOG-001','Jaipur Golden Transport Co. Pvt. Ltd.','Rakesh Sharma (Regional Mgr)','jaipur@jaipurgolden.com','0141-2334455','9829099881','transport','Transport Nagar, Agra Road','Bay 14-16','Jaipur','Rajasthan','302003','India','08AAACJ1288P1Z6','AAACJ1288P','15 Days from delivery','Bank of Baroda','12340200001234','BARB0JAIPUR','Heavy Hydraulic multi-axle trailers & 40ft flat-bed trailers for oversized steel girders',1,4,1,'2026-10-28 17:14:10','2026-10-28 17:14:10');
 /*!40000 ALTER TABLE `vendors` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `integrations`
+--
+
+DROP TABLE IF EXISTS `integrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `integrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `service` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'jira, slack, webhooks, teams',
+  `is_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `config` json DEFAULT NULL COMMENT 'Configuration parameters, hosts, credentials, channels',
+  `events` json DEFAULT NULL COMMENT 'Subscribed event triggers',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_service` (`service`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `integrations`
+--
+
+LOCK TABLES `integrations` WRITE;
+/*!40000 ALTER TABLE `integrations` DISABLE KEYS */;
+INSERT INTO `integrations` VALUES 
+(1,'jira',1,'{\"host\": \"https://heavysteel.atlassian.net\", \"email\": \"admin@heavysteel.in\", \"api_token\": \"your_jira_api_token\", \"project_key\": \"STEEL\", \"issue_type\": \"Quality NCR\"}','[\"qaqc_ncr_failed\", \"job_created\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
+(2,'slack',1,'{\"webhook_url\": \"https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN\", \"bot_token\": \"\", \"default_channel\": \"#shopfloor-alerts\", \"dispatch_channel\": \"#dispatch-alerts\", \"qc_channel\": \"#qc-ncr-alerts\"}','[\"dispatch_created\", \"job_stage_advanced\", \"qaqc_ncr_raised\", \"invoice_created\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
+/*!40000 ALTER TABLE `integrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `integration_logs`
+--
+
+DROP TABLE IF EXISTS `integration_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `integration_logs` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `service` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `direction` enum('outbound','inbound') NOT NULL DEFAULT 'outbound',
+  `event_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('success','failed','pending') NOT NULL DEFAULT 'success',
+  `payload` json DEFAULT NULL,
+  `response_code` int DEFAULT NULL,
+  `response_body` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_service_created` (`service`,`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `integration_logs`
+--
+
+LOCK TABLES `integration_logs` WRITE;
+/*!40000 ALTER TABLE `integration_logs` DISABLE KEYS */;
+INSERT INTO `integration_logs` VALUES 
+(1,'slack','outbound','dispatch_created','success','{\"challan_no\": \"DC-2627-001\", \"client\": \"NTPC Limited\", \"vehicle\": \"RJ-14-GC-8842\", \"net_weight\": \"20.00 MT\"}',200,'{\"ok\": true, \"channel\": \"#dispatch-alerts\"}','2026-10-22 17:15:00'),
+(2,'jira','outbound','qaqc_ncr_raised','success','{\"issue_key\": \"STEEL-1042\", \"summary\": \"UT Weld Joint Slag defect on ESP Panel\", \"project\": \"STEEL\"}',201,'{\"id\": \"10542\", \"key\": \"STEEL-1042\"}','2026-10-26 14:30:00');
+/*!40000 ALTER TABLE `integration_logs` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

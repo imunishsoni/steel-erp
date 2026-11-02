@@ -166,6 +166,12 @@
                     <i class="bi bi-graph-up-arrow"></i> Output &amp; Analytics
                 </a>
 
+                <!-- TICKETING & INTEGRATIONS -->
+                <div class="sidebar-heading">Integrations</div>
+                <a href="#integrations" class="sidebar-nav-link">
+                    <i class="bi bi-diagram-3"></i> Jira &amp; Slack Ticketing
+                </a>
+
                 <!-- TECHNICAL REFERENCE -->
                 <div class="sidebar-heading">Developer Docs</div>
                 <a href="#docs" class="sidebar-nav-link">
@@ -716,7 +722,399 @@
                 </div>
             </div>
 
-            <!-- VIEW 10: ARCHITECTURE & SETUP GUIDE -->
+            <!-- VIEW 10: TICKETING & COLLABORATION INTEGRATIONS -->
+            <div id="view-integrations" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-diagram-3 text-primary me-2"></i>Ticketing &amp; Collaboration Integrations</h4>
+                        <p class="text-muted small mb-0">Connect fabrication operations with Atlassian Jira, Slack channels &amp; automated webhook pipelines</p>
+                    </div>
+                    <div class="d-flex gap-2 mt-2 mt-sm-0">
+                        <button class="btn btn-outline-primary btn-sm" id="btnOpenDemoJiraModal">
+                            <i class="bi bi-plus-circle me-1"></i> New Jira Ticket
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" id="btnOpenDemoSlackModal">
+                            <i class="bi bi-slack me-1"></i> Slack Broadcast
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NAV TABS -->
+                <ul class="nav nav-pills mb-3 bg-white p-2 rounded shadow-sm border" id="demoIntegrationTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="demo-tab-jira-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-jira" type="button" role="tab">
+                            <i class="bi bi-kanban me-2"></i>Atlassian Jira
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="demo-tab-slack-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-slack" type="button" role="tab">
+                            <i class="bi bi-slack me-2"></i>Slack Channels
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="demo-tab-webhooks-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-webhooks" type="button" role="tab">
+                            <i class="bi bi-hdd-network me-2"></i>Webhooks &amp; API
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="demo-tab-logs-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-logs" type="button" role="tab">
+                            <i class="bi bi-clock-history me-2"></i>Delivery &amp; Audit Logs (<span id="demoLogCountBadge">0</span>)
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="demoIntegrationTabsContent">
+
+                    <!-- TAB 1: JIRA -->
+                    <div class="tab-pane fade show active" id="demo-tab-jira" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><i class="bi bi-kanban me-2 text-primary"></i>Jira Cloud / Server Ticketing Configuration</span>
+                                        <span class="badge bg-success" id="demoJiraStatusBadge">Connected (Simulated)</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="demoFormJiraSettings">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="demoJiraEnabled" checked>
+                                                <label class="form-check-label fw-bold" for="demoJiraEnabled">Enable Jira Issue Tracking Integration</label>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-12">
+                                                    <label class="form-label small fw-bold">Jira Host Domain URL</label>
+                                                    <input type="url" class="form-control font-monospace" id="demoJiraHost" value="https://heavysteel.atlassian.net">
+                                                    <div class="form-text">Base URL of your Atlassian Jira Cloud or Server instance.</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">Atlassian Account Email</label>
+                                                    <input type="email" class="form-control" id="demoJiraEmail" value="admin@heavysteel.in">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">API Token</label>
+                                                    <input type="password" class="form-control font-monospace" id="demoJiraToken" value="your_jira_api_token">
+                                                    <div class="form-text">Manage tokens under <strong>Atlassian Account &rarr; Security</strong>.</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">Default Project Key</label>
+                                                    <input type="text" class="form-control font-monospace text-uppercase" id="demoJiraProject" value="STEEL">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">Default Issue Type</label>
+                                                    <select class="form-select" id="demoJiraIssueType">
+                                                        <option value="Task">Task</option>
+                                                        <option value="Bug">Bug</option>
+                                                        <option value="Quality NCR" selected>Quality NCR (Non-Conformance)</option>
+                                                        <option value="Breakdown">Shop Floor Breakdown</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-lightning-charge text-warning me-2"></i>Automated Jira Triggers</h6>
+                                            <div class="row g-2">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvJiraNcr" checked>
+                                                        <label class="form-check-label small" for="demoEvJiraNcr">
+                                                            <strong>NDT Defect Detected:</strong> Auto-create Jira Quality NCR on weld failure
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvJiraJob" checked>
+                                                        <label class="form-check-label small" for="demoEvJiraJob">
+                                                            <strong>New Job Order:</strong> Create Engineering Drawing Review ticket
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvJiraBreakdown" checked>
+                                                        <label class="form-check-label small" for="demoEvJiraBreakdown">
+                                                            <strong>Bay Equipment Breakdown:</strong> Dispatch maintenance ticket
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                                <button type="button" class="btn btn-outline-secondary" id="btnTestJiraDemo">
+                                                    <i class="bi bi-arrow-repeat me-1"></i> Test Connection
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-1"></i> Save Jira Settings
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-info-circle me-2 text-info"></i>Why Fabricators Use Jira</span>
+                                    </div>
+                                    <div class="card-body small">
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark mb-1">1. Quality Non-Conformance (NCR)</h6>
+                                            <p class="text-muted mb-0">Track defect punch points, radiographic weld film reviews, ultrasonic root cracks, and client TPI approvals.</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark mb-1">2. Drawing Revision Workflows</h6>
+                                            <p class="text-muted mb-0">Manage customer drawing approvals and revisions across engineering design and shop floor bays.</p>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">3. Preventive Machine Maintenance</h6>
+                                            <p class="text-muted mb-0">Log breakdown tickets for plate rolling machines, 1000-ton hydraulic presses, and automatic SAW gantries.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm border-0 bg-primary bg-opacity-10">
+                                    <div class="card-body text-center p-4">
+                                        <i class="bi bi-ticket-perforated fs-1 text-primary mb-2"></i>
+                                        <h6 class="fw-bold">Raise a Jira Ticket Now</h6>
+                                        <p class="text-muted small">Try creating an issue linked to an active NTPC or UltraTech job order.</p>
+                                        <button class="btn btn-primary btn-sm" onclick="$('#btnOpenDemoJiraModal').click();">
+                                            <i class="bi bi-plus-circle me-1"></i> Create Jira Ticket
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: SLACK -->
+                    <div class="tab-pane fade" id="demo-tab-slack" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><i class="bi bi-slack me-2 text-success"></i>Slack Webhooks &amp; Channel Routing</span>
+                                        <span class="badge bg-success" id="demoSlackStatusBadge">Active (Simulated)</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="demoFormSlackSettings">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="demoSlackEnabled" checked>
+                                                <label class="form-check-label fw-bold" for="demoSlackEnabled">Enable Slack Real-Time Collaboration</label>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-12">
+                                                    <label class="form-label small fw-bold">Slack Incoming Webhook URL</label>
+                                                    <input type="url" class="form-control font-monospace" id="demoSlackWebhook" value="https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN">
+                                                    <div class="form-text">Created under <strong>Slack App &rarr; Incoming Webhooks</strong>.</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">General Channel</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoSlackChGeneral" value="#shopfloor-alerts">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">Dispatches Channel</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoSlackChDispatch" value="#dispatch-alerts">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">Quality NCR Channel</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoSlackChQC" value="#qc-ncr-alerts">
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-broadcast text-success me-2"></i>Automated Slack Event Subscriptions</h6>
+                                            <div class="row g-2">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvSlackDispatch" checked>
+                                                        <label class="form-check-label small" for="demoEvSlackDispatch">
+                                                            <strong>Consignment Dispatched:</strong> Trailer gate pass, driver phone, net weight &amp; E-Way bill
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvSlackStage" checked>
+                                                        <label class="form-check-label small" for="demoEvSlackStage">
+                                                            <strong>Fabrication Milestone:</strong> Progress from Fit-Up &rarr; SAW &rarr; SA 2.5 Blasting &rarr; PU Paint
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvSlackNCR" checked>
+                                                        <label class="form-check-label small" for="demoEvSlackNCR">
+                                                            <strong>Quality Punch Point:</strong> Urgent alert to QC managers with joint details
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvSlackInvoice" checked>
+                                                        <label class="form-check-label small" for="demoEvSlackInvoice">
+                                                            <strong>Tax Invoice Issued:</strong> Post invoice value (₹) and client GSTIN to accounts channel
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                                <button type="button" class="btn btn-outline-success" id="btnTestSlackDemo">
+                                                    <i class="bi bi-bell me-1"></i> Send Test Alert
+                                                </button>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="bi bi-save me-1"></i> Save Slack Settings
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Live Slack Message Format Preview</span>
+                                    </div>
+                                    <div class="card-body p-3 bg-light">
+                                        <div class="p-3 bg-white border rounded shadow-sm">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary p-2 me-2"><i class="bi bi-hammer text-white"></i></span>
+                                                <div>
+                                                    <strong class="text-dark">Steel ERP Bot</strong> <span class="badge bg-secondary" style="font-size: 0.65rem;">APP</span>
+                                                    <div class="text-muted" style="font-size: 0.7rem;">Live Simulated Alert</div>
+                                                </div>
+                                            </div>
+                                            <div class="fw-bold text-dark small mb-2" id="demoSlackPreviewTitle">🚚 Heavy Steel Consignment Dispatched: DC-2627-001</div>
+                                            <div class="bg-light p-2 rounded small mb-2 border-start border-4 border-warning" id="demoSlackPreviewBody">
+                                                <div><strong>Client:</strong> NTPC Limited (Ramagundam STPP)</div>
+                                                <div><strong>Net Weight:</strong> 20.00 MT (ESP Casings)</div>
+                                                <div><strong>Vehicle:</strong> RJ-14-GC-8842 (Trailer)</div>
+                                                <div><strong>Driver:</strong> Balram Gurjar (9829988112)</div>
+                                                <div><strong>E-Way Bill:</strong> 241890334812</div>
+                                            </div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">
+                                                🏭 Works Weighbridge | Cleared under Rule 55 CGST Rules
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm border-0 bg-success bg-opacity-10">
+                                    <div class="card-body text-center p-4">
+                                        <i class="bi bi-megaphone fs-1 text-success mb-2"></i>
+                                        <h6 class="fw-bold">Plant-wide Announcements</h6>
+                                        <p class="text-muted small">Broadcast emergency safety notices or client TPI visits to shop floor channels.</p>
+                                        <button class="btn btn-success btn-sm" onclick="$('#btnOpenDemoSlackModal').click();">
+                                            <i class="bi bi-send me-1"></i> Send Announcement
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: WEBHOOKS & API -->
+                    <div class="tab-pane fade" id="demo-tab-webhooks" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-box-arrow-in-down me-2 text-primary"></i>Inbound Webhook Endpoints</span>
+                                    </div>
+                                    <div class="card-body small">
+                                        <p class="text-muted">External systems (Jira Automations, Slack Interactivity, Zapier, Teams) can push events into the ERP via these endpoints:</p>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Jira Inbound Webhook URL:</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control font-monospace" value="https://imunishsoni.github.io/steel-erp/api/webhooks/jira" readonly id="demoUrlJiraInbound">
+                                                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText($('#demoUrlJiraInbound').val()); alert('Copied Jira endpoint!');"><i class="bi bi-clipboard"></i></button>
+                                            </div>
+                                            <div class="form-text">Receives <code>jira:issue_updated</code> and status changes.</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Slack Events Webhook URL:</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control font-monospace" value="https://imunishsoni.github.io/steel-erp/api/webhooks/slack" readonly id="demoUrlSlackInbound">
+                                                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText($('#demoUrlSlackInbound').val()); alert('Copied Slack endpoint!');"><i class="bi bi-clipboard"></i></button>
+                                            </div>
+                                            <div class="form-text">Captures Slack URL verification challenges and button interactions.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-box-arrow-up-right me-2 text-info"></i>Outbound Event Stream (Zapier / Teams)</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="demoFormWebhookSettings">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="demoWebhooksEnabled" checked>
+                                                <label class="form-check-label fw-bold" for="demoWebhooksEnabled">Stream ERP Events to External Webhook</label>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">Destination Webhook URL</label>
+                                                <input type="url" class="form-control font-monospace" id="demoWebhookTarget" value="https://api.steelworks.internal/erp/webhooks">
+                                                <div class="form-text">Receives authenticated JSON payloads signed with HMAC-SHA256.</div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">HMAC Signing Secret</label>
+                                                <input type="text" class="form-control font-monospace" id="demoWebhookSecret" value="whsec_steel_fab_2026_demo">
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i> Save Webhook Settings</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: EVENT & AUDIT LOGS -->
+                    <div class="tab-pane fade" id="demo-tab-logs" role="tabpanel">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <span class="fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i>Integration Transmission &amp; Audit Logs</span>
+                                <div>
+                                    <button class="btn btn-outline-secondary btn-sm" id="btnClearDemoLogs"><i class="bi bi-trash me-1"></i> Clear Logs</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" id="demoIntegrationLogsTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Service</th>
+                                            <th>Direction</th>
+                                            <th>Event Type</th>
+                                            <th>HTTP Code</th>
+                                            <th>Status</th>
+                                            <th>Details</th>
+                                            <th>Payload</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- VIEW 11: ARCHITECTURE & SETUP GUIDE -->
             <div id="view-docs" class="app-view-section container-fluid py-4 d-none">
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
                     <div>
@@ -1376,6 +1774,118 @@ app.baseURL = 'http://localhost:8080/'</pre>
                 <div class="modal-footer bg-light no-print">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btn-sm do-browser-print"><i class="bi bi-printer me-1"></i> Print / Save PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE JIRA TICKET (DEMO) -->
+    <div class="modal fade" id="demoModalCreateJira" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-kanban me-2"></i>Create Atlassian Jira Issue</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="demoFormCreateJira">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Issue Type</label>
+                                <select class="form-select" id="demoJiraModalType">
+                                    <option value="Quality NCR">Quality NCR (Non-Conformance)</option>
+                                    <option value="Task">Task</option>
+                                    <option value="Bug">Defect / Rework</option>
+                                    <option value="Breakdown">Shop Floor Breakdown</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Priority</label>
+                                <select class="form-select" id="demoJiraModalPriority">
+                                    <option value="High" selected>High</option>
+                                    <option value="Highest">Highest / Critical</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Link to Job Order</label>
+                                <select class="form-select" id="demoJiraModalJobSelect">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Issue Summary / Title</label>
+                                <input type="text" class="form-control" id="demoJiraModalSummary" placeholder="e.g. SA 516 Gr 70 Weld Joint Root Crack on ESP Duct Panel" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Technical Description &amp; NDT Observations</label>
+                                <textarea class="form-control font-monospace" id="demoJiraModalDescription" rows="4" placeholder="Specify Joint ID, Plate Heat No, NDT findings (UT/RT/DPT), root cause, and required corrective action." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Labels (Comma Separated)</label>
+                                <input type="text" class="form-control" id="demoJiraModalLabels" value="heavy-steel, welding, qc-ncr, asme-sec-viii">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check-circle me-1"></i> Submit to Jira</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: BROADCAST SLACK MESSAGE (DEMO) -->
+    <div class="modal fade" id="demoModalBroadcastSlack" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-slack me-2"></i>Broadcast Slack Announcement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="demoFormBroadcastSlack">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Target Channel</label>
+                            <select class="form-select font-monospace" id="demoSlackBroadcastChannel">
+                                <option value="#shopfloor-alerts">#shopfloor-alerts (General)</option>
+                                <option value="#dispatch-alerts">#dispatch-alerts (Dispatches &amp; Logistics)</option>
+                                <option value="#qc-ncr-alerts">#qc-ncr-alerts (Quality Control)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold required">Message Text</label>
+                            <textarea class="form-control" id="demoSlackBroadcastMsg" rows="4" placeholder="e.g. All Bay 1 and Bay 2 welders: Client TPI inspection by SGS scheduled tomorrow 10:00 AM for NTPC ESP Casings. Ensure DP test certificates are ready." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-send me-1"></i> Post to Slack</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VIEW JSON LOG PAYLOAD (DEMO) -->
+    <div class="modal fade" id="demoModalViewPayload" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="bi bi-code-square me-2"></i>Event Payload &amp; Response</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="fw-bold">Request Payload:</h6>
+                    <pre id="demoLogModalPayload" class="bg-light p-3 rounded font-monospace small" style="max-height: 250px; overflow-y: auto;"></pre>
+                    
+                    <h6 class="fw-bold mt-3">Response Body:</h6>
+                    <pre id="demoLogModalResponse" class="bg-light p-3 rounded font-monospace small" style="max-height: 200px; overflow-y: auto;"></pre>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

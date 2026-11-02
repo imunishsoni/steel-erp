@@ -21,6 +21,7 @@ Experience the full ERP lifecycle directly in your browser without needing local
 * ⚙️ **Shop Floor Job Orders**: Multi-stage route cards (Oxy-Cutting &rarr; Fit-Up &rarr; SAW/SMAW Welding &rarr; NDT UT/RT Testing &rarr; Blasting SA 2.5 &rarr; PU Coating).
 * 🚚 **Weighbridge & Logistics**: Computerized gross/tare/net tonnage calculation and Delivery Challans (Rule 55 CGST Rules) with E-Way bills.
 * 🧾 **GST Billing**: Indian GST Tax Invoicing (HSN 730890) with CGST/SGST/IGST breakups, IRN hashes, and printable formats.
+* 🎫 **Ticketing & Collaboration**: Built-in connections for **Atlassian Jira** (Quality NCRs, drawing punch points, equipment breakdowns) and **Slack** (instant trailer dispatch alerts, NDT failure alerts, plant broadcasts).
 * 💾 **In-Browser Persistence**: Runs with interactive client-side state saved to `localStorage` with sample data reset capability.
 
 ---
@@ -151,6 +152,23 @@ This ERP is purpose-built to manage the end-to-end lifecycle for fabricators ser
 
 ### 16. Company Settings
 * Company legal name, registered works address, GSTIN, PAN, CIN, Bank remittance details, document numbering prefixes.
+
+### 17. Ticketing & Collaboration Integrations (Jira, Slack & Webhooks)
+* **Atlassian Jira REST API Integration**:
+  - Connect with Jira Cloud or Server (`/rest/api/3/issue`) using API Tokens.
+  - Automated Quality NCR (Non-Conformance) tickets raised when welds fail Ultrasonic (UT) or Radiography (RT) inspections.
+  - Engineering drawing review tickets created automatically on Job Order release.
+  - Shop floor machinery breakdown ticketing for maintenance engineers.
+  - Quick-action modal to raise Jira issues directly from any Job Order or NDT record.
+* **Slack Webhooks & Bot Messaging**:
+  - Real-time Slack notifications via Incoming Webhooks or Bot Tokens.
+  - Formatted Block Kit cards for **Trailer Dispatches** (vehicle number, driver contact, gross/tare/net tonnage, client, destination, GST E-Way bill).
+  - Urgent alerts for **Quality Non-Conformance** sent directly to `#qc-ncr-alerts`.
+  - Fabrication milestone broadcasts sent to `#shopfloor-alerts`.
+  - Plant-wide announcement broadcaster.
+* **Bi-Directional Webhooks & Audit Logs**:
+  - Inbound webhook receivers (`/api/webhooks/jira` and `/api/webhooks/slack`) capturing issue updates and status transitions.
+  - Complete transmission audit log tracking HTTP status codes, request payloads, and response bodies.
 
 ---
 

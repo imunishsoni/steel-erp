@@ -157,6 +157,14 @@ class Production extends BaseController
         }
 
         log_activity('Production', 'Created Fabrication Job Order ' . $jobData['job_no']);
+        notify_integrations('job_created', [
+            'job_no'      => $jobData['job_no'],
+            'title'       => $jobData['title'],
+            'tonnage'     => $jobData['total_tonnage'],
+            'summary'     => "[{$jobData['job_no']}] New Fabrication Job Order: {$jobData['title']}",
+            'description' => "Job Order: {$jobData['job_no']}\nTitle: {$jobData['title']}\nTonnage: {$jobData['total_tonnage']} MT\nDrawing No: {$jobData['drawing_no']}\nTarget Date: {$jobData['target_completion_date']}",
+            'priority'    => ucfirst($jobData['priority'] ?? 'High'),
+        ]);
         return redirect()->to('/production/view/' . $jobId)->with('success', 'Job Order ' . $jobData['job_no'] . ' created successfully.');
     }
 
@@ -194,6 +202,13 @@ class Production extends BaseController
 
         $this->jobModel->update($id, $updateData);
         log_activity('Production', "Updated Job ID {$id} status to {$status} ({$completionPct}%)");
+        notify_integrations('job_stage_advanced', [
+            'job_id'      => $id,
+            'status'      => $status,
+            'progress'    => $completionPct,
+            'title'       => "Job #{$id} Milestone Reached: {$status} ({$completionPct}%)",
+            'description' => "Shop floor progress updated for Job #{$id}. Current stage status: {$status} with {$completionPct}% completion.",
+        ]);
 
         return redirect()->to('/production/view/' . $id)->with('success', 'Job status and progress updated.');
     }

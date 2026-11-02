@@ -119,6 +119,9 @@
             <a href="<?= base_url('settings') ?>" class="sidebar-nav-link <?= str_contains(uri_string(), 'settings') ? 'active' : '' ?>">
                 <i class="bi bi-sliders"></i> Company Settings
             </a>
+            <a href="<?= base_url('integrations') ?>" class="sidebar-nav-link <?= str_contains(uri_string(), 'integrations') ? 'active' : '' ?>">
+                <i class="bi bi-diagram-3"></i> Jira & Slack Integrations
+            </a>
         </div>
 
         <div class="p-3 border-top border-secondary border-opacity-25" style="font-size: 0.75rem; color: #6b7280;">

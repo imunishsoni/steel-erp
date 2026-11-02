@@ -190,4 +190,23 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->get('', 'Settings::index');
         $routes->post('update', 'Settings::update');
     });
+
+    // Ticketing & Collaboration Integrations (Jira, Slack, Webhooks)
+    $routes->group('integrations', static function ($routes) {
+        $routes->get('', 'Integrations::index');
+        $routes->post('update-jira', 'Integrations::updateJira');
+        $routes->post('update-slack', 'Integrations::updateSlack');
+        $routes->post('update-webhooks', 'Integrations::updateWebhooks');
+        $routes->post('test-jira', 'Integrations::testJira');
+        $routes->post('test-slack', 'Integrations::testSlack');
+        $routes->post('create-jira-issue', 'Integrations::createJiraIssue');
+        $routes->post('send-slack-message', 'Integrations::sendSlackMessage');
+        $routes->get('logs', 'Integrations::logs');
+    });
+});
+
+// Public / API Webhooks
+$routes->group('api/webhooks', static function ($routes) {
+    $routes->post('jira', 'Api\Webhooks::jira');
+    $routes->post('slack', 'Api\Webhooks::slack');
 });

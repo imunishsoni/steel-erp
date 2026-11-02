@@ -141,6 +141,16 @@ class Dispatches extends BaseController
         }
 
         log_activity('Dispatch', 'Generated Delivery Challan ' . $dispatchData['dc_no']);
+        notify_integrations('dispatch_created', [
+            'challan_no'   => $dispatchData['dc_no'],
+            'client_name'  => $this->request->getPost('client_name') ?: 'Plant Consignee',
+            'vehicle_no'   => $dispatchData['vehicle_no'] ?? '',
+            'driver_name'  => $dispatchData['driver_name'] ?? '',
+            'driver_phone' => $dispatchData['driver_phone'] ?? '',
+            'net_weight'   => $dispatchData['net_weight'] ?? 0,
+            'destination'  => $dispatchData['destination_address'] ?? '',
+            'eway_bill_no' => $dispatchData['eway_bill_no'] ?? '',
+        ]);
         return redirect()->to('/dispatches/view/' . $dispatchId)->with('success', 'Delivery Challan ' . $dispatchData['dc_no'] . ' created successfully.');
     }
 
