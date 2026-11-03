@@ -192,6 +192,16 @@ class Invoices extends BaseController
         }
 
         log_activity('Billing', 'Generated Tax Invoice ' . $invoiceData['invoice_no'] . ' for ₹' . number_format($grandTotal, 2));
+        notify_integrations('invoice_created', [
+            'inv_no'         => $invoiceData['invoice_no'],
+            'client_name'    => $this->request->getPost('client_name') ?: 'Client Plant',
+            'client_email'   => $this->request->getPost('client_email') ?: '',
+            'client_gstin'   => $this->request->getPost('client_gstin') ?: '',
+            'taxable_amount' => $taxableTotal,
+            'total_amount'   => $grandTotal,
+            'dc_ref'         => $invoiceData['dc_id'] ? ('DC-' . $invoiceData['dc_id']) : 'N/A',
+            'hsn'            => '730890',
+        ]);
         return redirect()->to('/invoices/view/' . $invoiceId)->with('success', 'Tax Invoice ' . $invoiceData['invoice_no'] . ' created successfully.');
     }
 

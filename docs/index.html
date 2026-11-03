@@ -727,9 +727,12 @@
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
                     <div>
                         <h4 class="fw-bold mb-1"><i class="bi bi-diagram-3 text-primary me-2"></i>Ticketing &amp; Collaboration Integrations</h4>
-                        <p class="text-muted small mb-0">Connect fabrication operations with Atlassian Jira, Slack channels &amp; automated webhook pipelines</p>
+                        <p class="text-muted small mb-0">Connect fabrication operations with SMTP Email, Atlassian Jira, Slack channels &amp; automated webhook pipelines</p>
                     </div>
                     <div class="d-flex gap-2 mt-2 mt-sm-0">
+                        <button class="btn btn-outline-info btn-sm" id="btnOpenDemoEmailModal">
+                            <i class="bi bi-envelope-plus me-1"></i> Compose Email
+                        </button>
                         <button class="btn btn-outline-primary btn-sm" id="btnOpenDemoJiraModal">
                             <i class="bi bi-plus-circle me-1"></i> New Jira Ticket
                         </button>
@@ -749,6 +752,11 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="demo-tab-slack-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-slack" type="button" role="tab">
                             <i class="bi bi-slack me-2"></i>Slack Channels
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="demo-tab-email-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-email" type="button" role="tab">
+                            <i class="bi bi-envelope-at me-2"></i>Email (SMTP)
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -1017,7 +1025,165 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: WEBHOOKS & API -->
+                    <!-- TAB 3: EMAIL NOTIFICATIONS (SMTP) -->
+                    <div class="tab-pane fade" id="demo-tab-email" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><i class="bi bi-envelope-at me-2 text-info"></i>SMTP Server &amp; Gateway Configuration</span>
+                                        <span class="badge bg-success" id="demoEmailStatusBadge">Active (Simulated)</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="demoFormEmailSettings">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="demoEmailEnabled" checked>
+                                                <label class="form-check-label fw-bold" for="demoEmailEnabled">Enable Automated Email Notifications</label>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">SMTP Server Host</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoEmailHost" value="smtp.gmail.com">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small fw-bold">SMTP Port</label>
+                                                    <input type="number" class="form-control font-monospace" id="demoEmailPort" value="587">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small fw-bold">Encryption</label>
+                                                    <select class="form-select font-monospace" id="demoEmailCrypto">
+                                                        <option value="tls" selected>TLS (STARTTLS)</option>
+                                                        <option value="ssl">SSL</option>
+                                                        <option value="">None</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">SMTP User / Username</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoEmailUser" value="notifications@heavysteel.in">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">From Email Address</label>
+                                                    <input type="email" class="form-control font-monospace" id="demoEmailFrom" value="notifications@heavysteel.in">
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label small fw-bold">Sender Display Name</label>
+                                                    <input type="text" class="form-control" id="demoEmailFromName" value="Heavy Steel Fabricators ERP (Jaipur Works)">
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-people me-2 text-primary"></i>Department Recipient Routing</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">Dispatches Email</label>
+                                                    <input type="text" class="form-control font-monospace small" id="demoEmailRecipDispatch" value="logistics@heavysteel.in">
+                                                    <div class="form-text">Receives gate pass copies.</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">Quality NCR Email</label>
+                                                    <input type="text" class="form-control font-monospace small" id="demoEmailRecipQC" value="qc@heavysteel.in">
+                                                    <div class="form-text">Receives defect notices.</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label small fw-bold">Accounts Email</label>
+                                                    <input type="text" class="form-control font-monospace small" id="demoEmailRecipAccounts" value="billing@heavysteel.in">
+                                                    <div class="form-text">Receives released tax invoices.</div>
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-lightning-charge text-warning me-2"></i>Automated Email Triggers</h6>
+                                            <div class="row g-2">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvEmailDispatch" checked>
+                                                        <label class="form-check-label small" for="demoEvEmailDispatch">
+                                                            <strong>Consignment Dispatched:</strong> Send formal Dispatch Advice with trailer details &amp; E-Way bill to client
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvEmailInvoice" checked>
+                                                        <label class="form-check-label small" for="demoEvEmailInvoice">
+                                                            <strong>GST Tax Invoice Issued:</strong> Email invoice notice with bank remittance IFSC &amp; payment term
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvEmailNCR" checked>
+                                                        <label class="form-check-label small" for="demoEvEmailNCR">
+                                                            <strong>Quality NCR Notice:</strong> Urgent weld defect alert to QA/QC manager &amp; TPI inspection agency
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvEmailQtn" checked>
+                                                        <label class="form-check-label small" for="demoEvEmailQtn">
+                                                            <strong>Quotation Released:</strong> Send technical estimation &amp; BOQ price schedule to client
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                                <button type="button" class="btn btn-outline-info" id="btnTestEmailDemo">
+                                                    <i class="bi bi-send-check me-1"></i> Send Test Email
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-1"></i> Save Email Settings
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Live HTML Email Preview</span>
+                                    </div>
+                                    <div class="card-body p-3 bg-light">
+                                        <div class="border rounded shadow-sm bg-white overflow-hidden">
+                                            <div style="background-color: #1e3a5f; color: #fff; padding: 12px 16px; border-bottom: 2px solid #f97316;">
+                                                <div class="fw-bold small">HEAVY STEEL FABRICATORS PVT. LTD.</div>
+                                                <div style="font-size: 0.65rem; color: #cbd5e1;">Jaipur Heavy Engineering Works</div>
+                                            </div>
+                                            <div class="p-3 small" id="demoEmailPreviewCard">
+                                                <div class="badge bg-primary text-uppercase mb-2">DISPATCH ADVICE</div>
+                                                <div class="fw-bold mb-1">Consignment Dispatched: DC-2627-001</div>
+                                                <p class="text-muted" style="font-size: 0.75rem;">Fabricated ESP Casing Panels (20.00 MT) safely loaded on 40ft trailer RJ-14-GC-8842 with GST E-Way Bill 241890334812.</p>
+                                                <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                                                    <strong>Client:</strong> NTPC Limited (Ramagundam STPP)<br>
+                                                    <strong>Net Weight:</strong> 20.00 MT
+                                                </div>
+                                            </div>
+                                            <div class="bg-light p-2 border-top text-muted" style="font-size: 0.65rem;">
+                                                GSTIN: 08AABCU9603R1ZM &bull; Automated System Notice
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm border-0 bg-info bg-opacity-10">
+                                    <div class="card-body text-center p-4">
+                                        <i class="bi bi-envelope-paper fs-1 text-info mb-2"></i>
+                                        <h6 class="fw-bold">Client Email Notice</h6>
+                                        <p class="text-muted small">Compose and dispatch an official email notice directly to NTPC, Adani, or UltraTech engineers.</p>
+                                        <button class="btn btn-info text-white btn-sm" onclick="$('#btnOpenDemoEmailModal').click();">
+                                            <i class="bi bi-envelope-plus me-1"></i> Compose Email Notice
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: WEBHOOKS & API -->
                     <div class="tab-pane fade" id="demo-tab-webhooks" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-lg-6">
@@ -1863,6 +2029,46 @@ app.baseURL = 'http://localhost:8080/'</pre>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-send me-1"></i> Post to Slack</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: COMPOSE EMAIL (DEMO) -->
+    <div class="modal fade" id="demoModalComposeEmail" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="bi bi-envelope-plus me-2"></i>Compose Email Notification</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="demoFormComposeEmail">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold required">Recipient Email Address</label>
+                                <input type="email" class="form-control" id="demoComposeEmailTo" placeholder="procurement.ramagundam@ntpc.co.in" value="procurement.ramagundam@ntpc.co.in" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold required">Email Subject</label>
+                                <input type="text" class="form-control" id="demoComposeEmailSubject" placeholder="Fabrication Milestone Clearance: Job JOB-2627-001" value="Fabrication Milestone Clearance: Job JOB-2627-001" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Notification Message Body</label>
+                                <textarea class="form-control font-monospace" id="demoComposeEmailMsg" rows="5" placeholder="Enter message text for client engineers..." required>Dear NTPC Project Team,
+
+Please be advised that the second batch of ESP Casing Panels for the 800MW Stage-IV project has passed 100% Ultrasonic Testing (AWS D1.1). Grit blasting to SA 2.5 is underway in Bay 1. Expected dispatch on multi-axle trailer next week.
+
+Best Regards,
+Works General Manager
+Heavy Steel Fabricators Pvt. Ltd.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info text-white btn-sm"><i class="bi bi-send me-1"></i> Send Email Notice</button>
                     </div>
                 </form>
             </div>

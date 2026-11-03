@@ -1,9 +1,12 @@
 <div class="row mb-3 align-items-center">
-    <div class="col-md-8">
-        <h4 class="mb-0"><i class="bi bi-diagram-3 me-2 text-primary"></i>Ticketing & Collaboration Integrations</h4>
-        <small class="text-muted">Connect your Heavy Fabrication ERP with Atlassian Jira, Slack channels, and automated webhook pipelines</small>
+    <div class="col-md-7">
+        <h4 class="mb-0"><i class="bi bi-diagram-3 me-2 text-primary"></i>Ticketing, Email &amp; Collaboration Integrations</h4>
+        <small class="text-muted">Connect your Heavy Fabrication ERP with SMTP Email, Atlassian Jira, Slack channels, and automated webhook pipelines</small>
     </div>
-    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+    <div class="col-md-5 text-md-end mt-2 mt-md-0">
+        <button class="btn btn-outline-info btn-sm me-1" data-bs-toggle="modal" data-bs-target="#modalComposeEmail">
+            <i class="bi bi-envelope-plus me-1"></i> Compose Email
+        </button>
         <button class="btn btn-outline-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#modalCreateJira">
             <i class="bi bi-plus-circle me-1"></i> New Jira Ticket
         </button>
@@ -26,13 +29,18 @@
         </button>
     </li>
     <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-email-btn" data-bs-toggle="pill" data-bs-target="#tab-email" type="button" role="tab">
+            <i class="bi bi-envelope-at me-2"></i>Email Notifications (SMTP)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
         <button class="nav-link" id="tab-webhooks-btn" data-bs-toggle="pill" data-bs-target="#tab-webhooks" type="button" role="tab">
-            <i class="bi bi-hdd-network me-2"></i>Webhooks & API
+            <i class="bi bi-hdd-network me-2"></i>Webhooks &amp; API
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="tab-logs-btn" data-bs-toggle="pill" data-bs-target="#tab-logs" type="button" role="tab">
-            <i class="bi bi-clock-history me-2"></i>Delivery & Event Logs
+            <i class="bi bi-clock-history me-2"></i>Delivery &amp; Event Logs
         </button>
     </li>
 </ul>
@@ -308,7 +316,175 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 3: WEBHOOKS & REST API ==================== -->
+    <!-- ==================== TAB 3: EMAIL NOTIFICATIONS (SMTP) ==================== -->
+    <div class="tab-pane fade" id="tab-email" role="tabpanel">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-envelope-at me-2 text-info"></i>SMTP Server &amp; Gateway Configuration</span>
+                        <span class="badge <?= !empty($email['is_enabled']) ? 'bg-success' : 'bg-secondary' ?>">
+                            <?= !empty($email['is_enabled']) ? 'Active' : 'Disabled' ?>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <form action="<?= base_url('integrations/update-email') ?>" method="post">
+                            <?= csrf_field() ?>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="email_enabled" name="is_enabled" value="1" <?= !empty($email['is_enabled']) ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold" for="email_enabled">Enable Automated Email Notifications</label>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required">SMTP Server Host</label>
+                                    <input type="text" name="smtp_host" class="form-control font-monospace" placeholder="smtp.gmail.com or mail.heavysteel.in" value="<?= esc($email['config']['smtp_host'] ?? '') ?>" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label required">SMTP Port</label>
+                                    <input type="number" name="smtp_port" class="form-control font-monospace" placeholder="587" value="<?= esc($email['config']['smtp_port'] ?? '587') ?>" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label required">Encryption</label>
+                                    <select name="smtp_crypto" class="form-select font-monospace">
+                                        <option value="tls" <?= ($email['config']['smtp_crypto'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS (STARTTLS)</option>
+                                        <option value="ssl" <?= ($email['config']['smtp_crypto'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
+                                        <option value="" <?= empty($email['config']['smtp_crypto']) ? 'selected' : '' ?>>None (Port 25)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">SMTP Username / Email</label>
+                                    <input type="text" name="smtp_user" class="form-control font-monospace" placeholder="notifications@heavysteel.in" value="<?= esc($email['config']['smtp_user'] ?? '') ?>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">SMTP Password</label>
+                                    <input type="password" name="smtp_pass" class="form-control font-monospace" placeholder="SMTP Password or App Key" value="<?= esc($email['config']['smtp_pass'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">From Email Address</label>
+                                    <input type="email" name="from_email" class="form-control" placeholder="notifications@heavysteel.in" value="<?= esc($email['config']['from_email'] ?? 'notifications@heavysteel.in') ?>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">From Sender Display Name</label>
+                                    <input type="text" name="from_name" class="form-control" placeholder="Heavy Steel Fabricators ERP" value="<?= esc($email['config']['from_name'] ?? 'Heavy Steel Fabricators ERP') ?>" required>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-people me-2 text-primary"></i>Default Department Recipients</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Dispatches Notification Recipient(s)</label>
+                                    <input type="text" name="dispatch_notify_emails" class="form-control font-monospace small" placeholder="logistics@heavysteel.in" value="<?= esc($email['config']['dispatch_notify_emails'] ?? 'logistics@heavysteel.in') ?>">
+                                    <div class="form-text">Receives gate pass &amp; weighbridge copy.</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Quality NCR Recipient(s)</label>
+                                    <input type="text" name="qc_notify_emails" class="form-control font-monospace small" placeholder="qc@heavysteel.in" value="<?= esc($email['config']['qc_notify_emails'] ?? 'qc@heavysteel.in') ?>">
+                                    <div class="form-text">Receives defect observations &amp; NDT reports.</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Billing / Accounts Recipient(s)</label>
+                                    <input type="text" name="accounts_notify_emails" class="form-control font-monospace small" placeholder="billing@heavysteel.in" value="<?= esc($email['config']['accounts_notify_emails'] ?? 'billing@heavysteel.in') ?>">
+                                    <div class="form-text">Receives copy of released tax invoices.</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-lightning-charge text-warning me-2"></i>Automated Email Triggers</h6>
+                            <div class="row g-2">
+                                <?php $emailEvents = $email['events'] ?? []; ?>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="dispatch_created" id="ev_email_dispatch" <?= in_array('dispatch_created', $emailEvents) || empty($emailEvents) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_email_dispatch">
+                                            <strong>Consignment Dispatched:</strong> Send formal Dispatch Advice with trailer details &amp; E-Way bill to client procurement officer
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="invoice_created" id="ev_email_invoice" <?= in_array('invoice_created', $emailEvents) || empty($emailEvents) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_email_invoice">
+                                            <strong>GST Tax Invoice Issued:</strong> Email invoice copy with bank remittance IFSC &amp; 30-day payment term
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="qaqc_ncr_raised" id="ev_email_ncr" <?= in_array('qaqc_ncr_raised', $emailEvents) || empty($emailEvents) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_email_ncr">
+                                            <strong>Quality NCR Notice:</strong> Urgent weld defect alert to QA/QC manager &amp; TPI inspection agency
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="quotation_sent" id="ev_email_qtn" <?= in_array('quotation_sent', $emailEvents) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_email_qtn">
+                                            <strong>Quotation Released:</strong> Send technical estimation &amp; BOQ price schedule to client tender committee
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <button type="button" class="btn btn-outline-secondary" onclick="openTestEmailModal()">
+                                    <i class="bi bi-send-check me-1"></i> Send Test Email
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i> Save Email Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Info Column -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <span class="fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Branded HTML Email Template Preview</span>
+                    </div>
+                    <div class="card-body p-3 bg-light">
+                        <div class="border rounded shadow-sm bg-white overflow-hidden">
+                            <div style="background-color: #1e3a5f; color: #fff; padding: 12px 16px; border-bottom: 2px solid #f97316;">
+                                <div class="fw-bold small">HEAVY STEEL FABRICATORS PVT. LTD.</div>
+                                <div style="font-size: 0.65rem; color: #cbd5e1;">Jaipur Heavy Engineering Works</div>
+                            </div>
+                            <div class="p-3 small">
+                                <div class="badge bg-primary text-uppercase mb-2">DISPATCH ADVICE</div>
+                                <div class="fw-bold mb-1">Consignment Dispatched: DC-2627-001</div>
+                                <p class="text-muted" style="font-size: 0.75rem;">Fabricated ESP Casing Panels (20.00 MT) safely loaded on 40ft trailer RJ-14-GC-8842 with GST E-Way Bill 241890334812.</p>
+                                <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                                    <strong>Client:</strong> NTPC Limited (Ramagundam STPP)<br>
+                                    <strong>Net Weight:</strong> 20.00 MT
+                                </div>
+                            </div>
+                            <div class="bg-light p-2 border-top text-muted" style="font-size: 0.65rem;">
+                                GSTIN: 08AABCU9603R1ZM &bull; Automated System Notice
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 bg-light">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-envelope-paper fs-1 text-info mb-2"></i>
+                        <h6 class="fw-bold">Direct Client Notification</h6>
+                        <p class="text-muted small">Compose and dispatch a formal email notice to NTPC, Adani, or UltraTech engineers.</p>
+                        <button class="btn btn-info text-white btn-sm" data-bs-toggle="modal" data-bs-target="#modalComposeEmail">
+                            <i class="bi bi-envelope-plus me-1"></i> Compose Email Notice
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: WEBHOOKS & REST API ==================== -->
     <div class="tab-pane fade" id="tab-webhooks" role="tabpanel">
         <div class="row g-4">
             <div class="col-lg-6">
@@ -540,6 +716,66 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: TEST EMAIL ==================== -->
+<div class="modal fade" id="modalTestEmail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-send-check me-2"></i>Send Test Verification Email</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-3">Send a formatted test email to verify your SMTP server connection, STARTTLS encryption, and authentication credentials.</p>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold required">Recipient Email Address</label>
+                    <input type="email" class="form-control" id="testEmailRecipient" placeholder="e.g. yourname@heavysteel.in" value="<?= esc($email['config']['from_email'] ?? 'admin@heavysteel.in') ?>" required>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info text-white btn-sm" id="btnSubmitTestEmail" onclick="sendTestEmailAction()">
+                    <i class="bi bi-send-check me-1"></i> Send Test
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: COMPOSE MANUAL EMAIL ==================== -->
+<div class="modal fade" id="modalComposeEmail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-envelope-plus me-2"></i>Compose Email Notification</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('integrations/send-email') ?>" method="post">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold required">Recipient Email</label>
+                            <input type="email" name="recipient" class="form-control" placeholder="client.procurement@ntpc.co.in" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold required">Email Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="Fabrication Progress Update - Stage IV ESP Casings" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold required">Message Text</label>
+                            <textarea name="message" class="form-control font-monospace" rows="5" placeholder="Dear Sir/Madam,&#10;&#10;Please be informed that Phase 2 welding DP testing has been cleared by TPI. Material is being transferred to surface preparation bay for grit blasting to SA 2.5." required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info text-white btn-sm"><i class="bi bi-send me-1"></i> Send Email</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- ==================== MODAL: VIEW JSON LOG PAYLOAD ==================== -->
 <div class="modal fade" id="modalViewLogPayload" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -610,6 +846,47 @@ function testSlackConnection() {
     })
     .catch(err => {
         btn.innerHTML = '<i class="bi bi-bell me-1"></i> Send Test Alert';
+        btn.disabled = false;
+        alert('Server request failed: ' + err);
+    });
+}
+
+function openTestEmailModal() {
+    new bootstrap.Modal(document.getElementById('modalTestEmail')).show();
+}
+
+function sendTestEmailAction() {
+    const recipient = document.getElementById('testEmailRecipient').value.trim();
+    if (!recipient) {
+        alert('Please enter a recipient email address.');
+        return;
+    }
+    const btn = document.getElementById('btnSubmitTestEmail');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
+    btn.disabled = true;
+
+    const fd = new FormData();
+    fd.append('recipient', recipient);
+
+    fetch('<?= base_url('integrations/test-email') ?>', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.innerHTML = '<i class="bi bi-send-check me-1"></i> Send Test';
+        btn.disabled = false;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalTestEmail'));
+        if (modal) modal.hide();
+        if (data.success) {
+            alert('✅ Email Success: ' + data.message);
+        } else {
+            alert('❌ Email Failed: ' + data.message);
+        }
+    })
+    .catch(err => {
+        btn.innerHTML = '<i class="bi bi-send-check me-1"></i> Send Test';
         btn.disabled = false;
         alert('Server request failed: ' + err);
     });

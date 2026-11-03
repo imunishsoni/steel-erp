@@ -591,6 +591,19 @@
                 },
                 events: ["dispatch_created", "job_stage_advanced", "qaqc_ncr_raised", "invoice_created"]
             },
+            email: {
+                isEnabled: true,
+                smtpHost: "smtp.gmail.com",
+                smtpPort: 587,
+                smtpCrypto: "tls",
+                smtpUser: "notifications@heavysteel.in",
+                fromEmail: "notifications@heavysteel.in",
+                fromName: "Heavy Steel Fabricators ERP",
+                dispatchNotifyEmails: "logistics@heavysteel.in",
+                qcNotifyEmails: "qc@heavysteel.in",
+                accountsNotifyEmails: "billing@heavysteel.in",
+                events: ["dispatch_created", "invoice_created", "qaqc_ncr_raised", "quotation_sent"]
+            },
             webhooks: {
                 isEnabled: true,
                 outgoingUrl: "https://api.steelworks.internal/erp/webhooks",
@@ -618,6 +631,25 @@
                 },
                 {
                     id: 2,
+                    timestamp: "2026-10-22 17:16:00",
+                    service: "email",
+                    direction: "outbound",
+                    eventType: "dispatch_advice",
+                    httpCode: 250,
+                    status: "success",
+                    summary: "Dispatch Advice email sent to procurement.ramagundam@ntpc.co.in (DC-2627-001)",
+                    payload: {
+                        to: "procurement.ramagundam@ntpc.co.in",
+                        subject: "🚚 Dispatch Advice: Consignment DC-2627-001 (20.00 MT)",
+                        challanNo: "DC-2627-001",
+                        netWeight: "20.00 MT",
+                        vehicle: "RJ-14-GC-8842",
+                        ewayBill: "241890334812"
+                    },
+                    response: { status: "accepted", messageId: "<dc-2627-001@heavysteel.in>" }
+                },
+                {
+                    id: 3,
                     timestamp: "2026-10-26 14:32:00",
                     service: "jira",
                     direction: "outbound",
@@ -668,6 +700,9 @@
                 appData = JSON.parse(stored);
                 if (!appData.integrations) {
                     appData.integrations = JSON.parse(JSON.stringify(defaultData.integrations));
+                    saveData();
+                } else if (!appData.integrations.email) {
+                    appData.integrations.email = JSON.parse(JSON.stringify(defaultData.integrations.email));
                     saveData();
                 }
             } catch (e) {
@@ -1117,6 +1152,7 @@
         if (!appData.integrations) return;
         const jira = appData.integrations.jira || {};
         const slack = appData.integrations.slack || {};
+        const email = appData.integrations.email || {};
         const logs = appData.integrations.logs || [];
 
         // Status badges
@@ -1128,11 +1164,26 @@
             .removeClass('bg-success bg-secondary')
             .addClass(slack.isEnabled ? 'bg-success' : 'bg-secondary');
 
+        $('#demoEmailStatusBadge').text(email.isEnabled ? 'Active (Simulated)' : 'Disabled')
+            .removeClass('bg-success bg-secondary')
+            .addClass(email.isEnabled ? 'bg-success' : 'bg-secondary');
+
         $('#demoLogCountBadge').text(logs.length);
 
         // Form controls
         $('#demoJiraEnabled').prop('checked', !!jira.isEnabled);
         $('#demoSlackEnabled').prop('checked', !!slack.isEnabled);
+        $('#demoEmailEnabled').prop('checked', !!email.isEnabled);
+
+        if (email.smtpHost) $('#demoEmailHost').val(email.smtpHost);
+        if (email.smtpPort) $('#demoEmailPort').val(email.smtpPort);
+        if (email.smtpCrypto) $('#demoEmailCrypto').val(email.smtpCrypto);
+        if (email.smtpUser) $('#demoEmailUser').val(email.smtpUser);
+        if (email.fromEmail) $('#demoEmailFrom').val(email.fromEmail);
+        if (email.fromName) $('#demoEmailFromName').val(email.fromName);
+        if (email.dispatchNotifyEmails) $('#demoEmailRecipDispatch').val(email.dispatchNotifyEmails);
+        if (email.qcNotifyEmails) $('#demoEmailRecipQC').val(email.qcNotifyEmails);
+        if (email.accountsNotifyEmails) $('#demoEmailRecipAccounts').val(email.accountsNotifyEmails);
 
         // Populate logs table
         let logsHtml = '';
@@ -1140,8 +1191,8 @@
             logsHtml = '<tr><td colspan="8" class="text-center py-4 text-muted">No integration events recorded yet.</td></tr>';
         } else {
             logs.forEach(log => {
-                const sBadge = log.service === 'jira' ? 'bg-primary' : (log.service === 'slack' ? 'bg-success' : 'bg-secondary');
-                const sIcon = log.service === 'jira' ? 'bi-kanban' : (log.service === 'slack' ? 'bi-slack' : 'bi-hdd-network');
+                const sBadge = log.service === 'jira' ? 'bg-primary' : (log.service === 'slack' ? 'bg-success' : (log.service === 'email' ? 'bg-info text-white' : 'bg-secondary'));
+                const sIcon = log.service === 'jira' ? 'bi-kanban' : (log.service === 'slack' ? 'bi-slack' : (log.service === 'email' ? 'bi-envelope-at' : 'bi-hdd-network'));
                 const codeBadge = (log.httpCode >= 200 && log.httpCode < 300) ? 'bg-success' : 'bg-danger';
 
                 logsHtml += `
@@ -1621,11 +1672,34 @@
                 `);
             }
 
+            // Automatic Email Dispatch Advice
+            if (appData.integrations && appData.integrations.email && appData.integrations.email.isEnabled) {
+                recordIntegrationEvent(
+                    'email',
+                    'outbound',
+                    'dispatch_advice',
+                    250,
+                    'success',
+                    `Dispatch Advice email sent to ${newDC.client} logistics (${newDC.dcNo})`,
+                    { to: 'procurement@client.in', subject: `🚚 Dispatch Advice: Consignment ${newDC.dcNo} (${newDC.netWt} MT)`, challanNo: newDC.dcNo, netWeight: newDC.netWt + ' MT', vehicle: newDC.vehicleNo, ewayBill: newDC.ewayBill },
+                    { status: 'accepted', messageId: `<${newDC.dcNo.toLowerCase()}@heavysteel.in>` }
+                );
+                $('#demoEmailPreviewCard').html(`
+                    <div class="badge bg-primary text-uppercase mb-2">DISPATCH ADVICE</div>
+                    <div class="fw-bold mb-1">Consignment Dispatched: ${newDC.dcNo}</div>
+                    <p class="text-muted" style="font-size: 0.75rem;">Fabricated steel structures (${newDC.netWt} MT) dispatched on trailer ${newDC.vehicleNo} with GST E-Way Bill ${newDC.ewayBill}.</p>
+                    <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                        <strong>Client:</strong> ${newDC.client}<br>
+                        <strong>Net Weight:</strong> ${newDC.netWt} MT
+                    </div>
+                `);
+            }
+
             renderDispatches();
             renderDashboard();
             $('#newDCModal').modal('hide');
             this.reset();
-            showToast(`Delivery Challan ${newDC.dcNo} generated for ${newDC.netWt} MT & alert posted to Slack!`, 'success');
+            showToast(`Delivery Challan ${newDC.dcNo} generated for ${newDC.netWt} MT & alert posted to Slack/Email!`, 'success');
         });
 
         // Print Delivery Challan Modal
@@ -1727,6 +1801,44 @@
 
             appData.invoices.unshift(newInv);
             saveData();
+
+            // Automatic Email Tax Invoice Notification
+            if (appData.integrations && appData.integrations.email && appData.integrations.email.isEnabled) {
+                recordIntegrationEvent(
+                    'email',
+                    'outbound',
+                    'invoice_created',
+                    250,
+                    'success',
+                    `Tax Invoice ${newInv.invNo} (${formatINR(newInv.totalAmount)}) delivered to ${newInv.client}`,
+                    { to: clientObj.email || 'accounts@client.in', subject: `📄 Tax Invoice ${newInv.invNo} (${formatINR(newInv.totalAmount)}) - Heavy Steel Fabrication`, invoiceNo: newInv.invNo, totalAmount: formatINR(newInv.totalAmount), gstin: newInv.clientGstin, ewayRef: newInv.dcRef },
+                    { status: 'accepted', messageId: `<${newInv.invNo.toLowerCase()}@heavysteel.in>` }
+                );
+                $('#demoEmailPreviewCard').html(`
+                    <div class="badge bg-success text-uppercase mb-2">TAX INVOICE ADVICE</div>
+                    <div class="fw-bold mb-1">GST Invoice Raised: ${newInv.invNo}</div>
+                    <p class="text-muted" style="font-size: 0.75rem;">Tax Invoice for fabricated steel structures (${newInv.weightMT} MT) delivered to Accounts & Client procurement.</p>
+                    <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                        <strong>Client:</strong> ${newInv.client}<br>
+                        <strong>Total Amount:</strong> ${formatINR(newInv.totalAmount)}
+                    </div>
+                `);
+            }
+
+            // Automatic Slack Invoice Broadcast
+            if (appData.integrations && appData.integrations.slack && appData.integrations.slack.isEnabled) {
+                recordIntegrationEvent(
+                    'slack',
+                    'outbound',
+                    'invoice_created',
+                    200,
+                    'success',
+                    `GST Tax Invoice ${newInv.invNo} (${formatINR(newInv.totalAmount)}) generated for ${newInv.client}`,
+                    { invoiceNo: newInv.invNo, client: newInv.client, amount: formatINR(newInv.totalAmount), gstin: newInv.clientGstin },
+                    { ok: true, channel: '#shopfloor-alerts' }
+                );
+            }
+
             renderInvoices();
             renderDashboard();
             $('#newInvoiceModal').modal('hide');
@@ -1965,6 +2077,106 @@
             $('#demoLogModalPayload').text(JSON.stringify(log.payload || {}, null, 2));
             $('#demoLogModalResponse').text(JSON.stringify(log.response || {}, null, 2));
             $('#demoModalViewPayload').modal('show');
+        });
+
+        // -------------------------------------------------------------
+        // Email Integration Handlers (SMTP & Compose)
+        // -------------------------------------------------------------
+        $('#btnOpenDemoEmailModal').on('click', function () {
+            $('#demoModalComposeEmail').modal('show');
+        });
+
+        $('#demoFormComposeEmail').on('submit', function (e) {
+            e.preventDefault();
+            const to = $('#demoComposeEmailTo').val();
+            const subject = $('#demoComposeEmailSubject').val();
+            const msg = $('#demoComposeEmailMsg').val();
+
+            recordIntegrationEvent(
+                'email',
+                'outbound',
+                'manual_email',
+                250,
+                'success',
+                `Email notification delivered to ${to}: "${subject.substring(0, 45)}"`,
+                { to: to, subject: subject, body: msg },
+                { status: 'accepted', messageId: `<manual-${Date.now()}@heavysteel.in>` }
+            );
+
+            // Update live email preview card
+            const safeSubject = $('<div>').text(subject).html();
+            const safeMsg = $('<div>').text(msg.length > 120 ? msg.substring(0, 120) + '...' : msg).html();
+            const safeTo = $('<div>').text(to).html();
+
+            $('#demoEmailPreviewCard').html(`
+                <div class="badge bg-info text-uppercase mb-2">CUSTOM NOTICE</div>
+                <div class="fw-bold mb-1">${safeSubject}</div>
+                <p class="text-muted" style="font-size: 0.75rem;">${safeMsg}</p>
+                <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                    <strong>Recipient:</strong> ${safeTo}<br>
+                    <strong>Delivered:</strong> ${new Date().toLocaleTimeString()}
+                </div>
+            `);
+
+            $('#demoModalComposeEmail').modal('hide');
+            this.reset();
+            showToast(`Email notice delivered successfully to ${to}!`, 'success');
+        });
+
+        $('#btnTestEmailDemo').on('click', function () {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Sending...');
+
+            setTimeout(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-send-check me-1"></i> Send Test Email');
+                const host = $('#demoEmailHost').val() || 'smtp.gmail.com';
+                const from = $('#demoEmailFrom').val() || 'notifications@heavysteel.in';
+                const port = $('#demoEmailPort').val() || '587';
+
+                recordIntegrationEvent(
+                    'email',
+                    'outbound',
+                    'test_email',
+                    250,
+                    'success',
+                    `SMTP handshake verified with ${host}:${port} via TLS. Test notification sent from ${from}`,
+                    { host: host, from: from, port: port },
+                    { status: 'accepted', response: '250 2.0.0 OK Handshake completed' }
+                );
+
+                $('#demoEmailPreviewCard').html(`
+                    <div class="badge bg-success text-uppercase mb-2">SMTP VERIFIED</div>
+                    <div class="fw-bold mb-1">SMTP Gateway Handshake Test</div>
+                    <p class="text-muted" style="font-size: 0.75rem;">Connection established with ${$('<div>').text(host).html()} on port ${$('<div>').text(port).html()}.</p>
+                    <div class="p-2 bg-light rounded" style="font-size: 0.7rem;">
+                        <strong>Sender:</strong> ${$('<div>').text(from).html()}<br>
+                        <strong>Status:</strong> 250 2.0.0 OK Handshake completed
+                    </div>
+                `);
+
+                showToast(`SMTP test email delivered successfully via ${host}!`, 'success');
+            }, 600);
+        });
+
+        $('#demoFormEmailSettings').on('submit', function (e) {
+            e.preventDefault();
+            if (!appData.integrations) appData.integrations = {};
+            if (!appData.integrations.email) appData.integrations.email = {};
+
+            appData.integrations.email.isEnabled = $('#demoEmailEnabled').is(':checked');
+            appData.integrations.email.smtpHost = $('#demoEmailHost').val();
+            appData.integrations.email.smtpPort = parseInt($('#demoEmailPort').val()) || 587;
+            appData.integrations.email.smtpCrypto = $('#demoEmailCrypto').val();
+            appData.integrations.email.smtpUser = $('#demoEmailUser').val();
+            appData.integrations.email.fromEmail = $('#demoEmailFrom').val();
+            appData.integrations.email.fromName = $('#demoEmailFromName').val();
+            appData.integrations.email.dispatchNotifyEmails = $('#demoEmailRecipDispatch').val();
+            appData.integrations.email.qcNotifyEmails = $('#demoEmailRecipQC').val();
+            appData.integrations.email.accountsNotifyEmails = $('#demoEmailRecipAccounts').val();
+
+            saveData();
+            renderIntegrations();
+            showToast('Email notification settings saved!', 'success');
         });
 
         // Standalone Print Window Trigger
