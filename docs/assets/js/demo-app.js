@@ -604,6 +604,16 @@
                 accountsNotifyEmails: "billing@heavysteel.in",
                 events: ["dispatch_created", "invoice_created", "qaqc_ncr_raised", "quotation_sent"]
             },
+            clickup: {
+                isEnabled: true,
+                platform: "clickup",
+                apiUrl: "https://api.clickup.com/api/v2",
+                token: "demo_clickup_api_token",
+                teamId: "9012345",
+                listId: "901800123456",
+                defaultPriority: 2,
+                events: ["job_created", "qaqc_ncr_raised", "machine_breakdown", "dispatch_created"]
+            },
             webhooks: {
                 isEnabled: true,
                 outgoingUrl: "https://api.steelworks.internal/erp/webhooks",
@@ -667,7 +677,7 @@
                     response: { id: "10542", key: "STEEL-1042", self: "https://heavysteel.atlassian.net/rest/api/3/issue/STEEL-1042" }
                 },
                 {
-                    id: 3,
+                    id: 4,
                     timestamp: "2026-10-27 11:20:00",
                     service: "slack",
                     direction: "outbound",
@@ -682,6 +692,23 @@
                         channel: "#shopfloor-alerts"
                     },
                     response: { ok: true, channel: "#shopfloor-alerts", ts: "1792778400.000200" }
+                },
+                {
+                    id: 5,
+                    timestamp: "2026-10-27 14:15:00",
+                    service: "clickup",
+                    direction: "outbound",
+                    eventType: "create_task",
+                    httpCode: 201,
+                    status: "success",
+                    summary: "Created task in ClickUp/Plane: [JOB-2627-001] Shop Floor Traveler",
+                    payload: {
+                        name: "[JOB-2627-001] Shop Floor Traveler: ESP Casing Panels",
+                        list_id: "901800123456",
+                        priority: 2,
+                        tags: ["shopfloor", "job-order", "fabrication"]
+                    },
+                    response: { id: "clk_8692a7f", status: { status: "to do" } }
                 }
             ]
         }
@@ -701,9 +728,15 @@
                 if (!appData.integrations) {
                     appData.integrations = JSON.parse(JSON.stringify(defaultData.integrations));
                     saveData();
-                } else if (!appData.integrations.email) {
-                    appData.integrations.email = JSON.parse(JSON.stringify(defaultData.integrations.email));
-                    saveData();
+                } else {
+                    if (!appData.integrations.email) {
+                        appData.integrations.email = JSON.parse(JSON.stringify(defaultData.integrations.email));
+                        saveData();
+                    }
+                    if (!appData.integrations.clickup) {
+                        appData.integrations.clickup = JSON.parse(JSON.stringify(defaultData.integrations.clickup));
+                        saveData();
+                    }
                 }
             } catch (e) {
                 console.error("Failed to parse stored Steel ERP data. Reverting to defaults.", e);
@@ -1153,6 +1186,7 @@
         const jira = appData.integrations.jira || {};
         const slack = appData.integrations.slack || {};
         const email = appData.integrations.email || {};
+        const clickup = appData.integrations.clickup || {};
         const logs = appData.integrations.logs || [];
 
         // Status badges
@@ -1168,12 +1202,17 @@
             .removeClass('bg-success bg-secondary')
             .addClass(email.isEnabled ? 'bg-success' : 'bg-secondary');
 
+        $('#demoClickupStatusBadge').text(clickup.isEnabled ? 'Active (Simulated)' : 'Disabled')
+            .removeClass('bg-success bg-secondary')
+            .addClass(clickup.isEnabled ? 'bg-success' : 'bg-secondary');
+
         $('#demoLogCountBadge').text(logs.length);
 
         // Form controls
         $('#demoJiraEnabled').prop('checked', !!jira.isEnabled);
         $('#demoSlackEnabled').prop('checked', !!slack.isEnabled);
         $('#demoEmailEnabled').prop('checked', !!email.isEnabled);
+        $('#demoClickupEnabled').prop('checked', !!clickup.isEnabled);
 
         if (email.smtpHost) $('#demoEmailHost').val(email.smtpHost);
         if (email.smtpPort) $('#demoEmailPort').val(email.smtpPort);
@@ -1185,14 +1224,21 @@
         if (email.qcNotifyEmails) $('#demoEmailRecipQC').val(email.qcNotifyEmails);
         if (email.accountsNotifyEmails) $('#demoEmailRecipAccounts').val(email.accountsNotifyEmails);
 
+        if (clickup.platform) $('#demoClickupPlatform').val(clickup.platform);
+        if (clickup.apiUrl) $('#demoClickupUrl').val(clickup.apiUrl);
+        if (clickup.token) $('#demoClickupToken').val(clickup.token);
+        if (clickup.teamId) $('#demoClickupTeam').val(clickup.teamId);
+        if (clickup.listId) $('#demoClickupList').val(clickup.listId);
+        if (clickup.defaultPriority) $('#demoClickupPriority').val(clickup.defaultPriority);
+
         // Populate logs table
         let logsHtml = '';
         if (logs.length === 0) {
             logsHtml = '<tr><td colspan="8" class="text-center py-4 text-muted">No integration events recorded yet.</td></tr>';
         } else {
             logs.forEach(log => {
-                const sBadge = log.service === 'jira' ? 'bg-primary' : (log.service === 'slack' ? 'bg-success' : (log.service === 'email' ? 'bg-info text-white' : 'bg-secondary'));
-                const sIcon = log.service === 'jira' ? 'bi-kanban' : (log.service === 'slack' ? 'bi-slack' : (log.service === 'email' ? 'bi-envelope-at' : 'bi-hdd-network'));
+                const sBadge = log.service === 'jira' ? 'bg-primary' : (log.service === 'slack' ? 'bg-success' : (log.service === 'email' ? 'bg-info text-white' : (log.service === 'clickup' ? 'bg-warning text-dark' : 'bg-secondary')));
+                const sIcon = log.service === 'jira' ? 'bi-kanban' : (log.service === 'slack' ? 'bi-slack' : (log.service === 'email' ? 'bi-envelope-at' : (log.service === 'clickup' ? 'bi-check2-square' : 'bi-hdd-network')));
                 const codeBadge = (log.httpCode >= 200 && log.httpCode < 300) ? 'bg-success' : 'bg-danger';
 
                 logsHtml += `
@@ -1215,12 +1261,12 @@
         }
         $('#demoIntegrationLogsTable tbody').html(logsHtml);
 
-        // Populate Job Order dropdown in Jira modal
+        // Populate Job Order dropdown in Jira and ClickUp modals
         let jobOptions = '<option value="">-- Select Active Job Order --</option>';
         (appData.productionJobs || []).forEach(j => {
-            jobOptions += `<option value="${j.jobNo}" data-title="${j.title}" data-client="${j.client}" data-tonnage="${j.tonnage}">${j.jobNo} (${j.client})</option>`;
+            jobOptions += `<option value="${j.jobNo}" data-title="${j.title}" data-client="${j.client}" data-tonnage="${j.tonnage}" data-dwg="${j.drawingNo}">${j.jobNo} (${j.client})</option>`;
         });
-        $('#demoJiraModalJobSelect').html(jobOptions);
+        $('#demoJiraModalJobSelect, #demoClickupModalJobSelect').html(jobOptions);
     }
 
     function renderAll() {
@@ -1413,11 +1459,39 @@
                     { ok: true, channel: '#shopfloor-alerts' }
                 );
             }
+            if (appData.integrations && appData.integrations.clickup && appData.integrations.clickup.isEnabled) {
+                const taskId = 'clk_' + Math.random().toString(36).substr(2, 9);
+                recordIntegrationEvent(
+                    'clickup',
+                    'outbound',
+                    'job_created',
+                    201,
+                    'success',
+                    `Auto-created Task ${taskId} in ClickUp/Plane: [${newJob.jobNo}] Shop Floor Traveler`,
+                    { name: `[${newJob.jobNo}] Shop Floor Traveler: ${newJob.title}`, priority: 2, tags: ['job-order', 'shopfloor'], list_id: appData.integrations.clickup.listId || '901800123456' },
+                    { id: taskId, url: `https://app.clickup.com/t/${taskId}`, status: { status: 'to do' } }
+                );
+                $('#demoClickupPreviewCard').html(`
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-warning text-dark"><i class="bi bi-flag-fill me-1"></i>High Priority</span>
+                        <span class="badge bg-light text-dark border">TO DO</span>
+                    </div>
+                    <div class="fw-bold text-dark small mb-1">[${newJob.jobNo}] Shop Floor Traveler: ${newJob.title}</div>
+                    <p class="text-muted" style="font-size: 0.75rem;">Fabrication of ${newJob.tonnage} MT casing assemblies for ${newJob.client}.</p>
+                    <div class="d-flex gap-1 mb-2">
+                        <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#job-order</span>
+                        <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#shopfloor</span>
+                    </div>
+                    <div class="text-muted" style="font-size: 0.7rem;">
+                        📅 Target: ${newJob.targetDate} &bull; 🏗️ Drawing: ${newJob.drawingNo}
+                    </div>
+                `);
+            }
 
             renderAll();
             $('#newJobModal').modal('hide');
             this.reset();
-            showToast(`Fabrication Job Order ${newJob.jobNo} created & synced with Jira/Slack!`, 'success');
+            showToast(`Fabrication Job Order ${newJob.jobNo} created & synced with Jira/Slack/ClickUp!`, 'success');
         });
 
         // View Job Traveler / Stages Modal
@@ -2177,6 +2251,123 @@
             saveData();
             renderIntegrations();
             showToast('Email notification settings saved!', 'success');
+        });
+
+        // -------------------------------------------------------------
+        // ClickUp & Open-Source PM Handlers
+        // -------------------------------------------------------------
+        $('#btnOpenDemoClickupModal').on('click', function () {
+            $('#demoClickupModalName').val('');
+            $('#demoClickupModalDesc').val('');
+            $('#demoModalCreateClickup').modal('show');
+        });
+
+        $('#demoClickupModalJobSelect').on('change', function () {
+            const opt = $(this).find('option:selected');
+            const jobNo = opt.val();
+            if (!jobNo) return;
+            const title = opt.data('title');
+            const client = opt.data('client');
+            const tonnage = opt.data('tonnage');
+
+            $('#demoClickupModalName').val(`[${jobNo}] Fabrication Traveler: ${title}`);
+            $('#demoClickupModalDesc').val(`### Job Reference: ${jobNo}\n- **Client / Plant:** ${client}\n- **Assembly:** ${title}\n- **Allocated Steel:** ${tonnage} MT\n\n### Milestones:\n- [ ] Raw plate issue from yard & Heat No verification\n- [ ] CNC Oxy-Fuel profile cutting\n- [ ] Fit-up & pre-weld assembly\n- [ ] SAW full-penetration welding\n- [ ] 100% NDT inspection\n- [ ] Blasting & painting`);
+            $('#demoClickupModalTags').val(`shopfloor, job-order, fabrication, ${jobNo.toLowerCase()}`);
+        });
+
+        $('#demoFormCreateClickup').on('submit', function (e) {
+            e.preventDefault();
+            const platform = (appData.integrations && appData.integrations.clickup && appData.integrations.clickup.platform) || 'clickup';
+            const taskId = 'clk_' + Math.random().toString(36).substr(2, 9);
+            const name = $('#demoClickupModalName').val();
+            const desc = $('#demoClickupModalDesc').val();
+            const priority = parseInt($('#demoClickupModalPriority').val()) || 2;
+            const tags = ($('#demoClickupModalTags').val() || '').split(',').map(t => t.trim()).filter(Boolean);
+
+            recordIntegrationEvent(
+                'clickup',
+                'outbound',
+                'create_task',
+                201,
+                'success',
+                `Created Task ${taskId} in ${platform.toUpperCase()}: "${name.substring(0, 45)}..."`,
+                { name: name, description: desc, priority: priority, tags: tags, list_id: (appData.integrations && appData.integrations.clickup && appData.integrations.clickup.listId) || '901800123456' },
+                { id: taskId, url: `https://app.clickup.com/t/${taskId}`, status: { status: 'to do' } }
+            );
+
+            // Update live preview card
+            const prioBadge = priority === 1 ? '<span class="badge bg-danger text-white"><i class="bi bi-flag-fill me-1"></i>Urgent</span>' :
+                              (priority === 2 ? '<span class="badge bg-warning text-dark"><i class="bi bi-flag-fill me-1"></i>High Priority</span>' :
+                              (priority === 3 ? '<span class="badge bg-info text-white"><i class="bi bi-flag-fill me-1"></i>Normal Priority</span>' :
+                              '<span class="badge bg-secondary text-white"><i class="bi bi-flag-fill me-1"></i>Low Priority</span>'));
+
+            const safeName = $('<div>').text(name).html();
+            const safeDesc = $('<div>').text(desc.length > 90 ? desc.substring(0, 90) + '...' : desc).html();
+            let tagsHtml = '';
+            tags.slice(0, 3).forEach(t => {
+                tagsHtml += `<span class="badge bg-secondary font-monospace me-1" style="font-size: 0.65rem;">#${$('<div>').text(t).html()}</span>`;
+            });
+
+            $('#demoClickupPreviewCard').html(`
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    ${prioBadge}
+                    <span class="badge bg-light text-dark border">TO DO</span>
+                </div>
+                <div class="fw-bold text-dark small mb-1">${safeName}</div>
+                <p class="text-muted" style="font-size: 0.75rem;">${safeDesc}</p>
+                <div class="d-flex gap-1 mb-2">
+                    ${tagsHtml}
+                </div>
+                <div class="text-muted" style="font-size: 0.7rem;">
+                    🆔 Task ID: ${taskId} &bull; 🌐 Engine: ${platform.toUpperCase()}
+                </div>
+            `);
+
+            $('#demoModalCreateClickup').modal('hide');
+            this.reset();
+            showToast(`Task ${taskId} created in ${platform.toUpperCase()}!`, 'success');
+        });
+
+        $('#btnTestClickupDemo').on('click', function () {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Testing...');
+
+            setTimeout(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-arrow-repeat me-1"></i> Test Connection');
+                const platform = $('#demoClickupPlatform').val() || 'clickup';
+                const url = $('#demoClickupUrl').val() || 'https://api.clickup.com/api/v2';
+
+                recordIntegrationEvent(
+                    'clickup',
+                    'outbound',
+                    'test_connection',
+                    200,
+                    'success',
+                    `Authenticated with ${platform.toUpperCase()} gateway at ${url}`,
+                    { platform: platform, endpoint: url + '/user', teamId: $('#demoClickupTeam').val() },
+                    { user: { username: 'Works PM Lead', email: 'pm.works@heavysteel.in' } }
+                );
+
+                showToast(`Connection to ${platform.toUpperCase()} verified successfully!`, 'success');
+            }, 600);
+        });
+
+        $('#demoFormClickupSettings').on('submit', function (e) {
+            e.preventDefault();
+            if (!appData.integrations) appData.integrations = {};
+            if (!appData.integrations.clickup) appData.integrations.clickup = {};
+
+            appData.integrations.clickup.isEnabled = $('#demoClickupEnabled').is(':checked');
+            appData.integrations.clickup.platform = $('#demoClickupPlatform').val();
+            appData.integrations.clickup.apiUrl = $('#demoClickupUrl').val();
+            appData.integrations.clickup.token = $('#demoClickupToken').val();
+            appData.integrations.clickup.teamId = $('#demoClickupTeam').val();
+            appData.integrations.clickup.listId = $('#demoClickupList').val();
+            appData.integrations.clickup.defaultPriority = parseInt($('#demoClickupPriority').val()) || 2;
+
+            saveData();
+            renderIntegrations();
+            showToast('ClickUp / Open-Source PM settings saved!', 'success');
         });
 
         // Standalone Print Window Trigger

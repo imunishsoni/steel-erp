@@ -4,6 +4,9 @@
         <small class="text-muted">Connect your Heavy Fabrication ERP with SMTP Email, Atlassian Jira, Slack channels, and automated webhook pipelines</small>
     </div>
     <div class="col-md-5 text-md-end mt-2 mt-md-0">
+        <button class="btn btn-outline-warning text-dark btn-sm me-1" data-bs-toggle="modal" data-bs-target="#modalCreateClickupTask">
+            <i class="bi bi-check2-square me-1"></i> New ClickUp Task
+        </button>
         <button class="btn btn-outline-info btn-sm me-1" data-bs-toggle="modal" data-bs-target="#modalComposeEmail">
             <i class="bi bi-envelope-plus me-1"></i> Compose Email
         </button>
@@ -31,6 +34,11 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="tab-email-btn" data-bs-toggle="pill" data-bs-target="#tab-email" type="button" role="tab">
             <i class="bi bi-envelope-at me-2"></i>Email Notifications (SMTP)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-clickup-btn" data-bs-toggle="pill" data-bs-target="#tab-clickup" type="button" role="tab">
+            <i class="bi bi-check2-square me-2"></i>ClickUp &amp; Open-Source PM
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -484,7 +492,176 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 4: WEBHOOKS & REST API ==================== -->
+    <!-- ==================== TAB 4: CLICKUP & OPEN-SOURCE PM ==================== -->
+    <div class="tab-pane fade" id="tab-clickup" role="tabpanel">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-check2-square me-2 text-warning"></i>ClickUp &amp; Open-Source Project Management Gateway</span>
+                        <span class="badge <?= !empty($clickup['is_enabled']) ? 'bg-success' : 'bg-secondary' ?>">
+                            <?= !empty($clickup['is_enabled']) ? 'Active' : 'Disabled' ?>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <form action="<?= base_url('/integrations/update-clickup') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="is_enabled" id="clickup_enabled" value="1" <?= !empty($clickup['is_enabled']) ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold" for="clickup_enabled">Enable ClickUp / Open-Source PM Synchronization</label>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Platform / Engine</label>
+                                    <select name="platform" class="form-select" id="clickup_platform">
+                                        <option value="clickup" <?= ($clickup['config']['platform'] ?? 'clickup') === 'clickup' ? 'selected' : '' ?>>ClickUp Cloud (REST API v2)</option>
+                                        <option value="plane" <?= ($clickup['config']['platform'] ?? '') === 'plane' ? 'selected' : '' ?>>Plane (Open-Source ClickUp/Jira Alternative)</option>
+                                        <option value="openproject" <?= ($clickup['config']['platform'] ?? '') === 'openproject' ? 'selected' : '' ?>>OpenProject (Self-Hosted)</option>
+                                        <option value="custom" <?= ($clickup['config']['platform'] ?? '') === 'custom' ? 'selected' : '' ?>>Custom REST Task Gateway</option>
+                                    </select>
+                                    <div class="form-text">Choose your preferred task tracking stack.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">API Base Endpoint URL</label>
+                                    <input type="text" name="api_url" class="form-control font-monospace" placeholder="https://api.clickup.com/api/v2" value="<?= esc($clickup['config']['api_url'] ?? 'https://api.clickup.com/api/v2') ?>">
+                                    <div class="form-text">ClickUp Cloud default: <code>https://api.clickup.com/api/v2</code></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">API Access Token / Personal Key</label>
+                                    <input type="password" name="api_token" class="form-control font-monospace" placeholder="pk_12345678_ABCDEF..." value="<?= esc($clickup['config']['api_token'] ?? '') ?>">
+                                    <div class="form-text">Generated under <strong>ClickUp Settings &rarr; Apps</strong>.</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Team / Workspace ID</label>
+                                    <input type="text" name="team_id" class="form-control font-monospace" placeholder="9012345" value="<?= esc($clickup['config']['team_id'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">List / Project ID</label>
+                                    <input type="text" name="list_id" class="form-control font-monospace" placeholder="901800123456" value="<?= esc($clickup['config']['list_id'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Default Task Priority</label>
+                                    <select name="default_priority" class="form-select font-monospace">
+                                        <option value="1" <?= ($clickup['config']['default_priority'] ?? 2) == 1 ? 'selected' : '' ?>>1 - Urgent (🔴 Red)</option>
+                                        <option value="2" <?= ($clickup['config']['default_priority'] ?? 2) == 2 ? 'selected' : '' ?>>2 - High (🟡 Yellow)</option>
+                                        <option value="3" <?= ($clickup['config']['default_priority'] ?? 2) == 3 ? 'selected' : '' ?>>3 - Normal (🔵 Blue)</option>
+                                        <option value="4" <?= ($clickup['config']['default_priority'] ?? 2) == 4 ? 'selected' : '' ?>>4 - Low (⚪ Grey)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-diagram-2 text-warning me-2"></i>Automated Shop Floor Event Triggers</h6>
+                            <div class="row g-2">
+                                <?php $ev = $clickup['events'] ?? []; ?>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="job_created" id="ev_clk_job" <?= in_array('job_created', $ev) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_clk_job">
+                                            <strong>New Job Order Released:</strong> Automatically create task with structural drawing, tonnage &amp; bay milestone checklist
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="qaqc_ncr_raised" id="ev_clk_ncr" <?= in_array('qaqc_ncr_raised', $ev) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_clk_ncr">
+                                            <strong>Quality NCR / Defect Raised:</strong> Urgent task for welding foreman &amp; TPI agency with joint defect specifics
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="machine_breakdown" id="ev_clk_maint" <?= in_array('machine_breakdown', $ev) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_clk_maint">
+                                            <strong>Machine Breakdown Logged:</strong> Dispatch maintenance ticket for plate rollers or SAW gantries
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="events[]" value="dispatch_created" id="ev_clk_dispatch" <?= in_array('dispatch_created', $ev) ? 'checked' : '' ?>>
+                                        <label class="form-check-label small" for="ev_clk_dispatch">
+                                            <strong>Consignment Dispatched:</strong> Create gate clearance task with E-Way bill and trailer number
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <button type="button" class="btn btn-outline-secondary" onclick="testClickupConnection()">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Test Connection
+                                </button>
+                                <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                    <i class="bi bi-save me-1"></i> Save ClickUp Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <span class="fw-bold"><i class="bi bi-info-circle me-2 text-info"></i>Why Fabricators Use ClickUp / Plane</span>
+                    </div>
+                    <div class="card-body small">
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-dark mb-1">1. Shop Floor Bay Kanban</h6>
+                            <p class="text-muted mb-0">Track plate cutting, fit-up, SAW welding, stress relieving, and painting progress in visual board swimlanes.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-dark mb-1">2. Plant Client Project Deliverables</h6>
+                            <p class="text-muted mb-0">Manage NTPC, Adani, and UltraTech milestone packages with target dispatch dates and checklists.</p>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">3. Open-Source Data Sovereignty</h6>
+                            <p class="text-muted mb-0">Self-host <strong>Plane</strong> or <strong>OpenProject</strong> on-premise at the factory without relying on third-party public cloud providers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <span class="fw-bold"><i class="bi bi-card-checklist me-2 text-warning"></i>Live Task Format Preview</span>
+                    </div>
+                    <div class="card-body p-3 bg-light">
+                        <div class="p-3 bg-white border rounded shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-warning text-dark"><i class="bi bi-flag-fill me-1"></i>High Priority</span>
+                                <span class="badge bg-light text-dark border">TO DO</span>
+                            </div>
+                            <div class="fw-bold text-dark small mb-1">[JOB-2627-001] Shop Floor Traveler: ESP Casing Panels</div>
+                            <p class="text-muted" style="font-size: 0.75rem;">Fabrication of 20.00 MT casing assemblies for NTPC Ramagundam STPP Stage-IV.</p>
+                            <div class="d-flex gap-1 mb-2">
+                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#job-order</span>
+                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#shopfloor</span>
+                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#bay-1</span>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.7rem;">
+                                📅 Target: 45 Days &bull; 🏗️ Drawing: DWG-NTPC-ESP-01
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 bg-warning bg-opacity-10">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-check2-square fs-1 text-warning mb-2"></i>
+                        <h6 class="fw-bold">Create ClickUp / Plane Task</h6>
+                        <p class="text-muted small">Push a work package, drawing review, or NCR ticket directly into your workspace list.</p>
+                        <button class="btn btn-warning text-dark btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalCreateClickupTask">
+                            <i class="bi bi-plus-circle me-1"></i> New Task Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 5: WEBHOOKS & REST API ==================== -->
     <div class="tab-pane fade" id="tab-webhooks" role="tabpanel">
         <div class="row g-4">
             <div class="col-lg-6">
@@ -776,6 +953,61 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: CREATE CLICKUP / PLANE TASK ==================== -->
+<div class="modal fade" id="modalCreateClickupTask" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold"><i class="bi bi-check2-square me-2"></i>Create Task in ClickUp / Plane</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('integrations/create-clickup-task') ?>" method="post">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Task Priority</label>
+                            <select name="priority" class="form-select font-monospace">
+                                <option value="1">1 - Urgent (Defect NCR / Breakdown)</option>
+                                <option value="2" selected>2 - High (Drawing &amp; Cutting Plan)</option>
+                                <option value="3">3 - Normal (Fit-Up &amp; SAW Welding)</option>
+                                <option value="4">4 - Low (Surface Preparation)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Link to Fabrication Job Order</label>
+                            <select class="form-select" onchange="autofillJobToClickup(this)">
+                                <option value="">-- Select Active Job Order --</option>
+                                <?php foreach ($recentJobs as $job): ?>
+                                    <option value="<?= esc($job['job_no']) ?>" data-title="<?= esc($job['title']) ?>" data-client="<?= esc($job['client_name'] ?? '') ?>" data-tonnage="<?= esc($job['total_tonnage']) ?>" data-dwg="<?= esc($job['drawing_no']) ?>">
+                                        <?= esc($job['job_no']) ?> (<?= esc($job['client_name'] ?? '') ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold required">Task Title / Name</label>
+                            <input type="text" name="name" id="clickupTaskName" class="form-control" placeholder="e.g. [JOB-2627-001] Ultrasonic Testing &amp; Radiography Review for ESP Casings" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold required">Task Markdown Description</label>
+                            <textarea name="description" id="clickupTaskDesc" class="form-control font-monospace" rows="4" placeholder="Milestone checklist, plate specifications (IS 2062 / SA 516 Gr 70), Bay assignment, or NDT defect observations." required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Tags (Comma Separated)</label>
+                            <input type="text" name="tags" id="clickupTaskTags" class="form-control font-monospace" placeholder="shopfloor, job-order, ntpc, bay-1, saw-welding" value="shopfloor, fabrication">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning text-dark btn-sm fw-bold"><i class="bi bi-plus-circle me-1"></i> Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- ==================== MODAL: VIEW JSON LOG PAYLOAD ==================== -->
 <div class="modal fade" id="modalViewLogPayload" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -902,6 +1134,46 @@ function autofillJobToJira(select) {
 
     document.getElementById('jiraIssueSummary').value = `[${jobNo}] Quality Inspection / Action Required: ${title}`;
     document.getElementById('jiraIssueDescription').value = `Job Order Reference: ${jobNo}\nClient / Plant: ${client}\nTonnage: ${tonnage} MT\nAssembly: ${title}\n\nTechnical Notes / Action Item:\n`;
+}
+
+function testClickupConnection() {
+    const btn = event.target;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Testing...';
+    btn.disabled = true;
+
+    fetch('<?= base_url('integrations/test-clickup') ?>', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Test Connection';
+        btn.disabled = false;
+        if (data.success) {
+            alert('✅ ClickUp/Plane Success: ' + data.message);
+        } else {
+            alert('❌ ClickUp/Plane Failed: ' + data.message);
+        }
+    })
+    .catch(err => {
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Test Connection';
+        btn.disabled = false;
+        alert('Server request failed: ' + err);
+    });
+}
+
+function autofillJobToClickup(select) {
+    const opt = select.options[select.selectedIndex];
+    if (!opt.value) return;
+    const jobNo = opt.value;
+    const title = opt.getAttribute('data-title');
+    const client = opt.getAttribute('data-client');
+    const tonnage = opt.getAttribute('data-tonnage');
+    const dwg = opt.getAttribute('data-dwg') || 'DWG-STD';
+
+    document.getElementById('clickupTaskName').value = `[${jobNo}] Fabrication Traveler: ${title}`;
+    document.getElementById('clickupTaskDesc').value = `### Job Order: ${jobNo}\n- **Client / Plant:** ${client}\n- **Assembly:** ${title}\n- **Allocated Steel:** ${tonnage} MT\n- **Drawing No:** ${dwg}\n\n### Checklist:\n- [ ] Material requisition from Plate Yard\n- [ ] CNC Oxy-Fuel profile cutting\n- [ ] Sub-assembly fit-up & root run\n- [ ] SAW full-penetration welding\n- [ ] 100% NDT inspection\n- [ ] Blasting & painting`;
+    document.getElementById('clickupTaskTags').value = `shopfloor, job-order, fabrication, ${jobNo.toLowerCase()}`;
 }
 
 function copyToClipboard(id) {

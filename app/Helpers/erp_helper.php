@@ -393,6 +393,27 @@ if (!function_exists('notify_integrations')) {
                     }
                 }
             }
+
+            // 4. Dispatch to ClickUp / Open-Source PM (Plane, OpenProject) if subscribed
+            $clickupConfig = $integrationModel->getServiceConfig('clickup');
+            if (!empty($clickupConfig['is_enabled'])) {
+                $clickupEvents = $clickupConfig['events'] ?? [];
+                if (empty($clickupEvents) || in_array($eventType, $clickupEvents)) {
+                    $clickup = new \App\Libraries\ClickUpService();
+                    if ($eventType === 'job_created') {
+                        $clickup->notifyJobCreated($data);
+                    } elseif ($eventType === 'qaqc_ncr_raised') {
+                        $clickup->notifyQualityNCR($data);
+                    } else {
+                        $clickup->createTask([
+                            'name'        => $data['summary'] ?? ($data['title'] ?? "[Steel ERP] {$eventType}"),
+                            'description' => $data['description'] ?? "Automated task triggered by ERP event: {$eventType}",
+                            'priority'    => $data['priority'] ?? 2,
+                            'tags'        => array_merge(['steel-erp', $eventType], $data['labels'] ?? []),
+                        ]);
+                    }
+                }
+            }
         } catch (\Throwable $e) {
             // Non-blocking for primary ERP flow
         }
