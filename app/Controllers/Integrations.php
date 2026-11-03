@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\JiraService;
 use App\Libraries\SlackService;
+use App\Libraries\EmailService;
 use App\Models\IntegrationLogModel;
 use App\Models\IntegrationModel;
 use App\Models\ProductionJobModel;
@@ -24,6 +25,7 @@ class Integrations extends BaseController
     {
         $jira = $this->integrationModel->getServiceConfig('jira');
         $slack = $this->integrationModel->getServiceConfig('slack');
+        $email = $this->integrationModel->getServiceConfig('email');
         $webhooks = $this->integrationModel->getServiceConfig('webhooks');
         $logs = $this->logModel->getRecent(20);
 
@@ -35,9 +37,10 @@ class Integrations extends BaseController
         $recentDispatches = $dispatchModel->orderBy('id', 'DESC')->limit(10)->findAll();
 
         return $this->render('integrations/index', [
-            'pageTitle'        => 'Ticketing & Collaboration Integrations (Jira, Slack & Webhooks)',
+            'pageTitle'        => 'Ticketing, Email & Collaboration Integrations',
             'jira'             => $jira,
             'slack'            => $slack,
+            'email'            => $email,
             'webhooks'         => $webhooks,
             'logs'             => $logs,
             'recentJobs'       => $recentJobs,
@@ -94,6 +97,70 @@ class Integrations extends BaseController
         log_activity('Integrations', 'Updated Generic Webhooks configuration');
 
         return redirect()->to('/integrations#tab-webhooks')->with('success', 'Webhooks configuration saved successfully.');
+    }
+
+    public function updateEmail()
+    {
+        $isEnabled = (bool)$this->request->getPost('is_enabled');
+        $config = [
+            'smtp_host'               => trim((string)$this->request->getPost('smtp_host')),
+            'smtp_port'               => (int)($this->request->getPost('smtp_port') ?: 587),
+            'smtp_crypto'             => trim((string)$this->request->getPost('smtp_crypto')) ?: 'tls',
+            'smtp_user'               => trim((string)$this->request->getPost('smtp_user')),
+            'smtp_pass'               => trim((string)$this->request->getPost('smtp_pass')),
+            'from_email'              => trim((string)$this->request->getPost('from_email')) ?: 'notifications@heavysteel.in',
+            'from_name'               => trim((string)$this->request->getPost('from_name')) ?: 'Heavy Steel Fabricators ERP',
+            'dispatch_notify_emails'  => trim((string)$this->request->getPost('dispatch_notify_emails')),
+            'qc_notify_emails'        => trim((string)$this->request->getPost('qc_notify_emails')),
+            'accounts_notify_emails'  => trim((string)$this->request->getPost('accounts_notify_emails')),
+        ];
+        $events = (array)$this->request->getPost('events');
+
+        $this->integrationModel->saveServiceConfig('email', $isEnabled, $config, $events);
+        log_activity('Integrations', 'Updated SMTP email notification settings');
+
+        return redirect()->to('/integrations#tab-email')->with('success', 'Email notification settings saved successfully.');
+    }
+
+    public function testEmail()
+    {
+        $emailService = new EmailService();
+        $recipient = trim((string)$this->request->getPost('recipient')) ?: 'admin@heavysteel.in';
+
+        $result = $emailService->sendTestEmail($recipient);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($result);
+        }
+
+        if ($result['success']) {
+            return redirect()->to('/integrations#tab-email')->with('success', $result['message']);
+        }
+        return redirect()->to('/integrations#tab-email')->with('error', $result['message']);
+    }
+
+    public function sendManualEmail()
+    {
+        $emailService = new EmailService();
+        $recipient = trim((string)$this->request->getPost('recipient'));
+        $subject = trim((string)$this->request->getPost('subject'));
+        $message = trim((string)$this->request->getPost('message'));
+
+        if (empty($recipient) || empty($subject) || empty($message)) {
+            return redirect()->to('/integrations#tab-email')->with('error', 'Recipient, subject, and message are required.');
+        }
+
+        $html = "<p>" . nl2br(esc($message)) . "</p>";
+        $result = $emailService->sendEmail($recipient, $subject, $html, [], 'manual_notice');
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($result);
+        }
+
+        if ($result['success']) {
+            return redirect()->to('/integrations#tab-email')->with('success', $result['message']);
+        }
+        return redirect()->to('/integrations#tab-email')->with('error', $result['message']);
     }
 
     public function testJira()

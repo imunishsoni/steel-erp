@@ -170,6 +170,20 @@ This ERP is purpose-built to manage the end-to-end lifecycle for fabricators ser
   - Inbound webhook receivers (`/api/webhooks/jira` and `/api/webhooks/slack`) capturing issue updates and status transitions.
   - Complete transmission audit log tracking HTTP status codes, request payloads, and response bodies.
 
+### 18. Automated Email Notifications (SMTP Gateway)
+* **Standard SMTP Transport**:
+  - Full TLS / SSL SMTP support (Gmail, Microsoft 365, Amazon SES, or custom on-premise mail servers) via CodeIgniter 4's native `Email` service.
+  - Built-in graceful simulation mode for local development or demo environments when credentials are not configured.
+* **Branded Industrial HTML Email Templates**:
+  - **Formal Dispatch Advice**: Consignment delivery notifications with trailer number, driver mobile, gross/tare/net tonnage from weighbridge, destination plant, and 12-digit GST E-Way Bill sent directly to client procurement.
+  - **GST Tax Invoices**: Automated invoice delivery with taxable value, GST breakup (CGST/SGST/IGST), payment due date, and bank NEFT/RTGS details.
+  - **Quality Non-Conformance (NCR) Alerts**: Urgent defect advisories delivered to QA/QC department and Third-Party Inspection (TPI) agencies (e.g. BVIS, SGS, TUV).
+  - **Quotation Delivery**: Technical estimation schedules and BOQ pricing proposals delivered to plant clients.
+* **Interactive Live Preview & Direct Compose**:
+  - Real-time HTML email template preview card in the admin portal and GitHub Pages showcase.
+  - Modal interface to compose custom client or plant engineer notifications on demand.
+  - Automated integration audit logging for all outbound SMTP transmissions.
+
 ---
 
 ## 🚀 Installation & Setup Guide

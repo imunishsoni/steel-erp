@@ -1434,7 +1434,8 @@ LOCK TABLES `integrations` WRITE;
 /*!40000 ALTER TABLE `integrations` DISABLE KEYS */;
 INSERT INTO `integrations` VALUES 
 (1,'jira',1,'{\"host\": \"https://heavysteel.atlassian.net\", \"email\": \"admin@heavysteel.in\", \"api_token\": \"your_jira_api_token\", \"project_key\": \"STEEL\", \"issue_type\": \"Quality NCR\"}','[\"qaqc_ncr_failed\", \"job_created\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
-(2,'slack',1,'{\"webhook_url\": \"https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN\", \"bot_token\": \"\", \"default_channel\": \"#shopfloor-alerts\", \"dispatch_channel\": \"#dispatch-alerts\", \"qc_channel\": \"#qc-ncr-alerts\"}','[\"dispatch_created\", \"job_stage_advanced\", \"qaqc_ncr_raised\", \"invoice_created\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
+(2,'slack',1,'{\"webhook_url\": \"https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN\", \"bot_token\": \"\", \"default_channel\": \"#shopfloor-alerts\", \"dispatch_channel\": \"#dispatch-alerts\", \"qc_channel\": \"#qc-ncr-alerts\"}','[\"dispatch_created\", \"job_stage_advanced\", \"qaqc_ncr_raised\", \"invoice_created\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
+(3,'email',1,'{\"smtp_host\": \"smtp.gmail.com\", \"smtp_port\": 587, \"smtp_crypto\": \"tls\", \"smtp_user\": \"notifications@heavysteel.in\", \"smtp_pass\": \"\", \"from_email\": \"notifications@heavysteel.in\", \"from_name\": \"Heavy Steel Fabricators ERP\", \"dispatch_notify_emails\": \"logistics@heavysteel.in\", \"qc_notify_emails\": \"qc@heavysteel.in\", \"accounts_notify_emails\": \"billing@heavysteel.in\"}','[\"dispatch_created\", \"invoice_created\", \"qaqc_ncr_raised\", \"quotation_sent\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
 /*!40000 ALTER TABLE `integrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1457,7 +1458,7 @@ CREATE TABLE `integration_logs` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_service_created` (`service`,`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1468,7 +1469,8 @@ LOCK TABLES `integration_logs` WRITE;
 /*!40000 ALTER TABLE `integration_logs` DISABLE KEYS */;
 INSERT INTO `integration_logs` VALUES 
 (1,'slack','outbound','dispatch_created','success','{\"challan_no\": \"DC-2627-001\", \"client\": \"NTPC Limited\", \"vehicle\": \"RJ-14-GC-8842\", \"net_weight\": \"20.00 MT\"}',200,'{\"ok\": true, \"channel\": \"#dispatch-alerts\"}','2026-10-22 17:15:00'),
-(2,'jira','outbound','qaqc_ncr_raised','success','{\"issue_key\": \"STEEL-1042\", \"summary\": \"UT Weld Joint Slag defect on ESP Panel\", \"project\": \"STEEL\"}',201,'{\"id\": \"10542\", \"key\": \"STEEL-1042\"}','2026-10-26 14:30:00');
+(2,'jira','outbound','qaqc_ncr_raised','success','{\"issue_key\": \"STEEL-1042\", \"summary\": \"UT Weld Joint Slag defect on ESP Panel\", \"project\": \"STEEL\"}',201,'{\"id\": \"10542\", \"key\": \"STEEL-1042\"}','2026-10-26 14:30:00'),
+(3,'email','outbound','dispatch_advice','success','{\"to\": \"procurement.ramagundam@ntpc.co.in\", \"challan_no\": \"DC-2627-001\", \"net_weight\": \"20.00 MT\", \"vehicle\": \"RJ-14-GC-8842\"}',250,'Message accepted for delivery','2026-10-22 17:16:00');
 /*!40000 ALTER TABLE `integration_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

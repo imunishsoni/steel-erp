@@ -377,6 +377,22 @@ if (!function_exists('notify_integrations')) {
                     ]);
                 }
             }
+
+            // 3. Dispatch Email if subscribed
+            $emailConfig = $integrationModel->getServiceConfig('email');
+            if (!empty($emailConfig['is_enabled'])) {
+                $emailEvents = $emailConfig['events'] ?? [];
+                if (empty($emailEvents) || in_array($eventType, $emailEvents)) {
+                    $emailService = new \App\Libraries\EmailService();
+                    if ($eventType === 'dispatch_created') {
+                        $emailService->notifyDispatch($data);
+                    } elseif ($eventType === 'invoice_created') {
+                        $emailService->notifyInvoice($data);
+                    } elseif ($eventType === 'qaqc_ncr_raised') {
+                        $emailService->notifyQuality($data);
+                    }
+                }
+            }
         } catch (\Throwable $e) {
             // Non-blocking for primary ERP flow
         }

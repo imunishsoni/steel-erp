@@ -196,11 +196,14 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->get('', 'Integrations::index');
         $routes->post('update-jira', 'Integrations::updateJira');
         $routes->post('update-slack', 'Integrations::updateSlack');
+        $routes->post('update-email', 'Integrations::updateEmail');
         $routes->post('update-webhooks', 'Integrations::updateWebhooks');
         $routes->post('test-jira', 'Integrations::testJira');
         $routes->post('test-slack', 'Integrations::testSlack');
+        $routes->post('test-email', 'Integrations::testEmail');
         $routes->post('create-jira-issue', 'Integrations::createJiraIssue');
         $routes->post('send-slack-message', 'Integrations::sendSlackMessage');
+        $routes->post('send-email', 'Integrations::sendManualEmail');
         $routes->get('logs', 'Integrations::logs');
     });
 });
