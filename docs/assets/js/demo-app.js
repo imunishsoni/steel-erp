@@ -570,7 +570,89 @@
                 inspector: "R. Sharma (ASNT Level II)",
                 tpiAgency: "Bureau Veritas"
             }
-        ]
+        ],
+        integrations: {
+            jira: {
+                isEnabled: true,
+                host: "https://heavysteel.atlassian.net",
+                email: "admin@heavysteel.in",
+                token: "your_jira_api_token",
+                projectKey: "STEEL",
+                issueType: "Quality NCR",
+                events: ["qaqc_ncr_failed", "job_created", "machine_breakdown"]
+            },
+            slack: {
+                isEnabled: true,
+                webhookUrl: "https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN",
+                channels: {
+                    default: "#shopfloor-alerts",
+                    dispatch: "#dispatch-alerts",
+                    qc: "#qc-ncr-alerts"
+                },
+                events: ["dispatch_created", "job_stage_advanced", "qaqc_ncr_raised", "invoice_created"]
+            },
+            webhooks: {
+                isEnabled: true,
+                outgoingUrl: "https://api.steelworks.internal/erp/webhooks",
+                secret: "whsec_steel_fab_2026_demo"
+            },
+            logs: [
+                {
+                    id: 1,
+                    timestamp: "2026-10-22 17:15:10",
+                    service: "slack",
+                    direction: "outbound",
+                    eventType: "dispatch_created",
+                    httpCode: 200,
+                    status: "success",
+                    summary: "Consignment DC-2627-001 (20.00 MT) posted to #dispatch-alerts",
+                    payload: {
+                        challanNo: "DC-2627-001",
+                        client: "NTPC Limited (Ramagundam STPP)",
+                        trailer: "RJ-14-GC-8842",
+                        netWeight: "20.00 MT",
+                        driver: "Balram Gurjar (9829988112)",
+                        ewayBill: "241890334812"
+                    },
+                    response: { ok: true, channel: "#dispatch-alerts", ts: "1792689310.000100" }
+                },
+                {
+                    id: 2,
+                    timestamp: "2026-10-26 14:32:00",
+                    service: "jira",
+                    direction: "outbound",
+                    eventType: "qaqc_ncr_raised",
+                    httpCode: 201,
+                    status: "success",
+                    summary: "Issue STEEL-1042 created for NDT defect on ESP panel",
+                    payload: {
+                        project: "STEEL",
+                        issueType: "Quality NCR",
+                        summary: "UT Weld Joint Slag inclusion on 32mm SA 516 Gr 70",
+                        jobRef: "JOB-2627-001",
+                        jointId: "WJ-ESP-01"
+                    },
+                    response: { id: "10542", key: "STEEL-1042", self: "https://heavysteel.atlassian.net/rest/api/3/issue/STEEL-1042" }
+                },
+                {
+                    id: 3,
+                    timestamp: "2026-10-27 11:20:00",
+                    service: "slack",
+                    direction: "outbound",
+                    eventType: "job_stage_advanced",
+                    httpCode: 200,
+                    status: "success",
+                    summary: "Milestone alert posted for White Cement Kiln-2 Cyclone Preheater Ducting",
+                    payload: {
+                        jobNo: "JOB-2627-002",
+                        stage: "SAW Welding & DP Testing",
+                        progress: "50%",
+                        channel: "#shopfloor-alerts"
+                    },
+                    response: { ok: true, channel: "#shopfloor-alerts", ts: "1792778400.000200" }
+                }
+            ]
+        }
     };
 
     // LocalStorage Key
@@ -584,6 +666,10 @@
         if (stored) {
             try {
                 appData = JSON.parse(stored);
+                if (!appData.integrations) {
+                    appData.integrations = JSON.parse(JSON.stringify(defaultData.integrations));
+                    saveData();
+                }
             } catch (e) {
                 console.error("Failed to parse stored Steel ERP data. Reverting to defaults.", e);
                 appData = JSON.parse(JSON.stringify(defaultData));
@@ -1005,6 +1091,87 @@
         $('#qaqcTable tbody').html(html);
     }
 
+    // Record Integration Event (Jira, Slack, Webhooks)
+    function recordIntegrationEvent(service, direction, eventType, httpCode, status, summary, payload, response) {
+        if (!appData.integrations) return;
+        const newLog = {
+            id: Date.now(),
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            service: service,
+            direction: direction,
+            eventType: eventType,
+            httpCode: httpCode,
+            status: status,
+            summary: summary,
+            payload: payload,
+            response: response
+        };
+        appData.integrations.logs = appData.integrations.logs || [];
+        appData.integrations.logs.unshift(newLog);
+        saveData();
+        renderIntegrations();
+    }
+
+    // Render Integrations & Audit Logs
+    function renderIntegrations() {
+        if (!appData.integrations) return;
+        const jira = appData.integrations.jira || {};
+        const slack = appData.integrations.slack || {};
+        const logs = appData.integrations.logs || [];
+
+        // Status badges
+        $('#demoJiraStatusBadge').text(jira.isEnabled ? 'Connected (Simulated)' : 'Disabled')
+            .removeClass('bg-success bg-secondary')
+            .addClass(jira.isEnabled ? 'bg-success' : 'bg-secondary');
+
+        $('#demoSlackStatusBadge').text(slack.isEnabled ? 'Active (Simulated)' : 'Disabled')
+            .removeClass('bg-success bg-secondary')
+            .addClass(slack.isEnabled ? 'bg-success' : 'bg-secondary');
+
+        $('#demoLogCountBadge').text(logs.length);
+
+        // Form controls
+        $('#demoJiraEnabled').prop('checked', !!jira.isEnabled);
+        $('#demoSlackEnabled').prop('checked', !!slack.isEnabled);
+
+        // Populate logs table
+        let logsHtml = '';
+        if (logs.length === 0) {
+            logsHtml = '<tr><td colspan="8" class="text-center py-4 text-muted">No integration events recorded yet.</td></tr>';
+        } else {
+            logs.forEach(log => {
+                const sBadge = log.service === 'jira' ? 'bg-primary' : (log.service === 'slack' ? 'bg-success' : 'bg-secondary');
+                const sIcon = log.service === 'jira' ? 'bi-kanban' : (log.service === 'slack' ? 'bi-slack' : 'bi-hdd-network');
+                const codeBadge = (log.httpCode >= 200 && log.httpCode < 300) ? 'bg-success' : 'bg-danger';
+
+                logsHtml += `
+                    <tr>
+                        <td><small class="text-muted font-monospace">${log.timestamp}</small></td>
+                        <td><span class="badge ${sBadge}"><i class="bi ${sIcon} me-1"></i>${log.service.toUpperCase()}</span></td>
+                        <td><span class="badge bg-light text-dark border">${log.direction.toUpperCase()}</span></td>
+                        <td><strong class="font-monospace small">${log.eventType}</strong></td>
+                        <td><span class="badge ${codeBadge}">${log.httpCode}</span></td>
+                        <td><span class="badge ${log.status === 'success' ? 'bg-success' : 'bg-danger'}">${log.status}</span></td>
+                        <td><small class="text-dark">${log.summary}</small></td>
+                        <td>
+                            <button class="btn btn-xs btn-outline-secondary py-0 px-2 view-demo-payload-btn" data-id="${log.id}" style="font-size: 0.72rem;">
+                                <i class="bi bi-eye"></i> JSON
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        $('#demoIntegrationLogsTable tbody').html(logsHtml);
+
+        // Populate Job Order dropdown in Jira modal
+        let jobOptions = '<option value="">-- Select Active Job Order --</option>';
+        (appData.productionJobs || []).forEach(j => {
+            jobOptions += `<option value="${j.jobNo}" data-title="${j.title}" data-client="${j.client}" data-tonnage="${j.tonnage}">${j.jobNo} (${j.client})</option>`;
+        });
+        $('#demoJiraModalJobSelect').html(jobOptions);
+    }
+
     function renderAll() {
         renderDashboard();
         renderClients('all');
@@ -1014,6 +1181,7 @@
         renderInvoices();
         renderQuotations();
         renderQAQC();
+        renderIntegrations();
     }
 
     // Navigation Switcher (SPA tabs)
@@ -1167,10 +1335,38 @@
 
             appData.productionJobs.unshift(newJob);
             saveData();
+
+            // Automatic Jira & Slack triggers
+            if (appData.integrations && appData.integrations.jira && appData.integrations.jira.isEnabled) {
+                const jiraKey = 'STEEL-' + Math.floor(1040 + Math.random() * 50);
+                recordIntegrationEvent(
+                    'jira',
+                    'outbound',
+                    'job_created',
+                    201,
+                    'success',
+                    `Auto-created Jira Ticket ${jiraKey} for Drawing Review: ${newJob.jobNo}`,
+                    { project: 'STEEL', issueType: 'Task', summary: `Drawing Review: ${newJob.jobNo}`, drawingNo: newJob.drawingNo },
+                    { key: jiraKey, id: '10' + Math.floor(100 + Math.random() * 900) }
+                );
+            }
+            if (appData.integrations && appData.integrations.slack && appData.integrations.slack.isEnabled) {
+                recordIntegrationEvent(
+                    'slack',
+                    'outbound',
+                    'job_created',
+                    200,
+                    'success',
+                    `New Job Order ${newJob.jobNo} (${newJob.tonnage} MT) broadcast to #shopfloor-alerts`,
+                    { jobNo: newJob.jobNo, client: newJob.client, tonnage: newJob.tonnage + ' MT', stage: newJob.currentStage },
+                    { ok: true, channel: '#shopfloor-alerts' }
+                );
+            }
+
             renderAll();
             $('#newJobModal').modal('hide');
             this.reset();
-            showToast(`Fabrication Job Order ${newJob.jobNo} created successfully! (Zero 404s)`, 'success');
+            showToast(`Fabrication Job Order ${newJob.jobNo} created & synced with Jira/Slack!`, 'success');
         });
 
         // View Job Traveler / Stages Modal
@@ -1244,6 +1440,19 @@
                 stagesList[0].status = 'in_progress';
                 job.currentStage = stagesList[0].name;
                 job.stageProgress = 15;
+            }
+
+            if (appData.integrations && appData.integrations.slack && appData.integrations.slack.isEnabled) {
+                recordIntegrationEvent(
+                    'slack',
+                    'outbound',
+                    'job_stage_advanced',
+                    200,
+                    'success',
+                    `Milestone advanced: ${job.jobNo} is now at "${job.currentStage}" (${job.stageProgress}%)`,
+                    { jobNo: job.jobNo, stage: job.currentStage, progress: job.stageProgress + '%' },
+                    { ok: true, channel: '#shopfloor-alerts' }
+                );
             }
 
             saveData();
@@ -1389,11 +1598,34 @@
 
             appData.dispatches.unshift(newDC);
             saveData();
+
+            // Automatic Slack Dispatch Notification
+            if (appData.integrations && appData.integrations.slack && appData.integrations.slack.isEnabled) {
+                recordIntegrationEvent(
+                    'slack',
+                    'outbound',
+                    'dispatch_created',
+                    200,
+                    'success',
+                    `Consignment ${newDC.dcNo} (${newDC.netWt} MT) dispatched to ${newDC.client}`,
+                    { challanNo: newDC.dcNo, vehicle: newDC.vehicleNo, netWeight: newDC.netWt + ' MT', ewayBill: newDC.ewayBill },
+                    { ok: true, channel: '#dispatch-alerts' }
+                );
+                $('#demoSlackPreviewTitle').text(`🚚 Heavy Steel Consignment Dispatched: ${newDC.dcNo}`);
+                $('#demoSlackPreviewBody').html(`
+                    <div><strong>Client:</strong> ${newDC.client}</div>
+                    <div><strong>Net Weight:</strong> ${newDC.netWt} MT</div>
+                    <div><strong>Vehicle:</strong> ${newDC.vehicleNo}</div>
+                    <div><strong>Driver:</strong> ${newDC.driverName} (${newDC.driverPhone})</div>
+                    <div><strong>E-Way Bill:</strong> ${newDC.ewayBill}</div>
+                `);
+            }
+
             renderDispatches();
             renderDashboard();
             $('#newDCModal').modal('hide');
             this.reset();
-            showToast(`Delivery Challan ${newDC.dcNo} generated for ${newDC.netWt} MT!`, 'success');
+            showToast(`Delivery Challan ${newDC.dcNo} generated for ${newDC.netWt} MT & alert posted to Slack!`, 'success');
         });
 
         // Print Delivery Challan Modal
@@ -1541,6 +1773,198 @@
 
             $('#printInvTotal').text(formatINR(inv.totalAmount));
             $('#printInvModal').modal('show');
+        });
+
+        // -------------------------------------------------------------
+        // Ticketing & Collaboration Integration Handlers (Jira & Slack)
+        // -------------------------------------------------------------
+        $('#btnOpenDemoJiraModal').on('click', function () {
+            $('#demoJiraModalSummary').val('');
+            $('#demoJiraModalDescription').val('');
+            $('#demoModalCreateJira').modal('show');
+        });
+
+        $('#demoJiraModalJobSelect').on('change', function () {
+            const opt = $(this).find('option:selected');
+            const jobNo = opt.val();
+            if (!jobNo) return;
+            const title = opt.data('title');
+            const client = opt.data('client');
+            const tonnage = opt.data('tonnage');
+
+            $('#demoJiraModalSummary').val(`[${jobNo}] Quality NCR / Action Item: ${title}`);
+            $('#demoJiraModalDescription').val(`Job Reference: ${jobNo}\nClient / Plant: ${client}\nTonnage: ${tonnage} MT\nAssembly: ${title}\n\nTechnical Observations:\n- Weld Joint / Component: \n- NDT Method (UT/RT/DPT): \n- Corrective Action Required: `);
+        });
+
+        $('#demoFormCreateJira').on('submit', function (e) {
+            e.preventDefault();
+            const projectKey = (appData.integrations && appData.integrations.jira && appData.integrations.jira.projectKey) || 'STEEL';
+            const issueKey = projectKey + '-' + Math.floor(1045 + Math.random() * 50);
+            const summary = $('#demoJiraModalSummary').val();
+            const desc = $('#demoJiraModalDescription').val();
+            const type = $('#demoJiraModalType').val();
+            const priority = $('#demoJiraModalPriority').val();
+
+            recordIntegrationEvent(
+                'jira',
+                'outbound',
+                'manual_issue_created',
+                201,
+                'success',
+                `Created Jira ${type} ${issueKey}: "${summary.substring(0, 45)}..."`,
+                { project: projectKey, issueType: type, priority: priority, summary: summary, description: desc },
+                { id: '10' + Math.floor(100 + Math.random() * 900), key: issueKey, self: `https://heavysteel.atlassian.net/rest/api/3/issue/${issueKey}` }
+            );
+
+            $('#demoModalCreateJira').modal('hide');
+            this.reset();
+            showToast(`Jira Ticket ${issueKey} generated successfully!`, 'success');
+        });
+
+        $('#btnOpenDemoSlackModal').on('click', function () {
+            $('#demoSlackBroadcastMsg').val('');
+            $('#demoModalBroadcastSlack').modal('show');
+        });
+
+        $('#demoFormBroadcastSlack').on('submit', function (e) {
+            e.preventDefault();
+            const channel = $('#demoSlackBroadcastChannel').val();
+            const msg = $('#demoSlackBroadcastMsg').val();
+
+            recordIntegrationEvent(
+                'slack',
+                'outbound',
+                'broadcast_message',
+                200,
+                'success',
+                `Broadcasted message to ${channel}: "${msg.substring(0, 40)}..."`,
+                { channel: channel, message: msg },
+                { ok: true, channel: channel, ts: Date.now().toString() }
+            );
+
+            // Update live preview card
+            $('#demoSlackPreviewTitle').text(`📢 Broadcast to ${channel}`);
+            $('#demoSlackPreviewBody').html(`<div>${msg}</div><div class="mt-2 text-muted small"><i class="bi bi-person"></i> Sent by Works Administrator</div>`);
+
+            $('#demoModalBroadcastSlack').modal('hide');
+            this.reset();
+            showToast(`Announcement posted to Slack channel ${channel}!`, 'success');
+        });
+
+        $('#btnTestJiraDemo').on('click', function () {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Testing...');
+
+            setTimeout(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-arrow-repeat me-1"></i> Test Connection');
+                const host = $('#demoJiraHost').val();
+                const email = $('#demoJiraEmail').val();
+
+                recordIntegrationEvent(
+                    'jira',
+                    'outbound',
+                    'test_connection',
+                    200,
+                    'success',
+                    `Authenticated with Jira instance at ${host} as ${email}`,
+                    { host: host, email: email, endpoint: '/rest/api/3/myself' },
+                    { displayName: 'System Administrator (Works GM)', emailAddress: email, active: true }
+                );
+
+                showToast(`Jira connection test succeeded! Authenticated as ${email}`, 'success');
+            }, 600);
+        });
+
+        $('#btnTestSlackDemo').on('click', function () {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Sending...');
+
+            setTimeout(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-bell me-1"></i> Send Test Alert');
+                const ch = $('#demoSlackChGeneral').val() || '#shopfloor-alerts';
+
+                recordIntegrationEvent(
+                    'slack',
+                    'outbound',
+                    'test_alert',
+                    200,
+                    'success',
+                    `Connection test alert delivered to channel ${ch}`,
+                    { channel: ch, text: 'Test connection from Bharat Heavy Steel ERP works' },
+                    { ok: true, channel: ch, ts: Date.now().toString() }
+                );
+
+                $('#demoSlackPreviewTitle').text(`🔔 Steel ERP Connection Test`);
+                $('#demoSlackPreviewBody').html(`
+                    <div><strong>Status:</strong> 🟢 Active & Connected</div>
+                    <div><strong>Works:</strong> Jaipur Heavy Engineering Facility</div>
+                    <div><strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}</div>
+                `);
+
+                showToast(`Test alert delivered to Slack channel ${ch}!`, 'success');
+            }, 600);
+        });
+
+        $('#demoFormJiraSettings').on('submit', function (e) {
+            e.preventDefault();
+            if (!appData.integrations) appData.integrations = {};
+            if (!appData.integrations.jira) appData.integrations.jira = {};
+
+            appData.integrations.jira.isEnabled = $('#demoJiraEnabled').is(':checked');
+            appData.integrations.jira.host = $('#demoJiraHost').val();
+            appData.integrations.jira.email = $('#demoJiraEmail').val();
+            appData.integrations.jira.token = $('#demoJiraToken').val();
+            appData.integrations.jira.projectKey = $('#demoJiraProject').val();
+            appData.integrations.jira.issueType = $('#demoJiraIssueType').val();
+
+            saveData();
+            renderIntegrations();
+            showToast('Jira integration settings saved!', 'success');
+        });
+
+        $('#demoFormSlackSettings').on('submit', function (e) {
+            e.preventDefault();
+            if (!appData.integrations) appData.integrations = {};
+            if (!appData.integrations.slack) appData.integrations.slack = {};
+
+            appData.integrations.slack.isEnabled = $('#demoSlackEnabled').is(':checked');
+            appData.integrations.slack.webhookUrl = $('#demoSlackWebhook').val();
+            appData.integrations.slack.channels = {
+                default: $('#demoSlackChGeneral').val(),
+                dispatch: $('#demoSlackChDispatch').val(),
+                qc: $('#demoSlackChQC').val()
+            };
+
+            saveData();
+            renderIntegrations();
+            showToast('Slack integration settings saved!', 'success');
+        });
+
+        $('#demoFormWebhookSettings').on('submit', function (e) {
+            e.preventDefault();
+            showToast('Outbound webhook pipeline settings updated!', 'success');
+        });
+
+        $('#btnClearDemoLogs').on('click', function () {
+            if (confirm('Clear integration transmission logs?')) {
+                if (appData.integrations) {
+                    appData.integrations.logs = [];
+                    saveData();
+                    renderIntegrations();
+                    showToast('Integration audit logs cleared.', 'info');
+                }
+            }
+        });
+
+        $(document).on('click', '.view-demo-payload-btn', function () {
+            const logId = $(this).data('id');
+            const logs = (appData.integrations && appData.integrations.logs) || [];
+            const log = logs.find(l => l.id == logId);
+            if (!log) return;
+
+            $('#demoLogModalPayload').text(JSON.stringify(log.payload || {}, null, 2));
+            $('#demoLogModalResponse').text(JSON.stringify(log.response || {}, null, 2));
+            $('#demoModalViewPayload').modal('show');
         });
 
         // Standalone Print Window Trigger

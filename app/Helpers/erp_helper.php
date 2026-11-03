@@ -321,3 +321,64 @@ if (!function_exists('log_activity')) {
         }
     }
 }
+
+if (!function_exists('notify_integrations')) {
+    /**
+     * Dispatch event notification to Jira, Slack, and generic webhooks
+     *
+     * @param string $eventType e.g. dispatch_created, job_stage_advanced, qaqc_ncr_raised
+     * @param array $data Event context
+     */
+    function notify_integrations(string $eventType, array $data = [])
+    {
+        try {
+            $integrationModel = new \App\Models\IntegrationModel();
+
+            // 1. Dispatch to Slack if subscribed
+            $slackConfig = $integrationModel->getServiceConfig('slack');
+            if (!empty($slackConfig['is_enabled'])) {
+                $events = $slackConfig['events'] ?? [];
+                if (empty($events) || in_array($eventType, $events)) {
+                    $slack = new \App\Libraries\SlackService();
+                    if ($eventType === 'dispatch_created') {
+                        $slack->notifyDispatch($data);
+                    } elseif ($eventType === 'qaqc_ncr_raised') {
+                        $slack->notifyQuality($data);
+                    } else {
+                        $title = $data['title'] ?? ucfirst(str_replace('_', ' ', $eventType));
+                        $slack->sendMessage([
+                            'text' => "📢 [Steel ERP] {$title}",
+                            'blocks' => [
+                                [
+                                    'type' => 'section',
+                                    'text' => [
+                                        'type' => 'mrkdwn',
+                                        'text' => "⚙️ *[Steel ERP]* {$title}\n" . ($data['description'] ?? 'Event processed in ERP.'),
+                                    ],
+                                ],
+                            ],
+                        ]);
+                    }
+                }
+            }
+
+            // 2. Dispatch to Jira if subscribed
+            $jiraConfig = $integrationModel->getServiceConfig('jira');
+            if (!empty($jiraConfig['is_enabled'])) {
+                $jiraEvents = $jiraConfig['events'] ?? [];
+                if (in_array($eventType, $jiraEvents)) {
+                    $jira = new \App\Libraries\JiraService();
+                    $jira->createIssue([
+                        'summary'     => $data['summary'] ?? ($data['title'] ?? "[Steel ERP] {$eventType}"),
+                        'description' => $data['description'] ?? "Automated ticket triggered by ERP event: {$eventType}",
+                        'issue_type'  => $data['issue_type'] ?? ($jiraConfig['config']['issue_type'] ?? 'Task'),
+                        'priority'    => $data['priority'] ?? 'High',
+                        'labels'      => array_merge(['steel-erp', $eventType], $data['labels'] ?? []),
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Non-blocking for primary ERP flow
+        }
+    }
+}
