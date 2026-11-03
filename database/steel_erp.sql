@@ -1435,7 +1435,8 @@ LOCK TABLES `integrations` WRITE;
 INSERT INTO `integrations` VALUES 
 (1,'jira',1,'{\"host\": \"https://heavysteel.atlassian.net\", \"email\": \"admin@heavysteel.in\", \"api_token\": \"your_jira_api_token\", \"project_key\": \"STEEL\", \"issue_type\": \"Quality NCR\"}','[\"qaqc_ncr_failed\", \"job_created\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
 (2,'slack',1,'{\"webhook_url\": \"https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN\", \"bot_token\": \"\", \"default_channel\": \"#shopfloor-alerts\", \"dispatch_channel\": \"#dispatch-alerts\", \"qc_channel\": \"#qc-ncr-alerts\"}','[\"dispatch_created\", \"job_stage_advanced\", \"qaqc_ncr_raised\", \"invoice_created\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
-(3,'email',1,'{\"smtp_host\": \"smtp.gmail.com\", \"smtp_port\": 587, \"smtp_crypto\": \"tls\", \"smtp_user\": \"notifications@heavysteel.in\", \"smtp_pass\": \"\", \"from_email\": \"notifications@heavysteel.in\", \"from_name\": \"Heavy Steel Fabricators ERP\", \"dispatch_notify_emails\": \"logistics@heavysteel.in\", \"qc_notify_emails\": \"qc@heavysteel.in\", \"accounts_notify_emails\": \"billing@heavysteel.in\"}','[\"dispatch_created\", \"invoice_created\", \"qaqc_ncr_raised\", \"quotation_sent\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
+(3,'email',1,'{\"smtp_host\": \"smtp.gmail.com\", \"smtp_port\": 587, \"smtp_crypto\": \"tls\", \"smtp_user\": \"notifications@heavysteel.in\", \"smtp_pass\": \"\", \"from_email\": \"notifications@heavysteel.in\", \"from_name\": \"Heavy Steel Fabricators ERP\", \"dispatch_notify_emails\": \"logistics@heavysteel.in\", \"qc_notify_emails\": \"qc@heavysteel.in\", \"accounts_notify_emails\": \"billing@heavysteel.in\"}','[\"dispatch_created\", \"invoice_created\", \"qaqc_ncr_raised\", \"quotation_sent\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
+(4,'clickup',1,'{\"platform\": \"clickup\", \"api_url\": \"https://api.clickup.com/api/v2\", \"api_token\": \"your_clickup_api_token\", \"team_id\": \"9012345\", \"list_id\": \"901800123456\", \"default_priority\": 2}','[\"job_created\", \"qaqc_ncr_raised\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
 /*!40000 ALTER TABLE `integrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1470,7 +1471,8 @@ LOCK TABLES `integration_logs` WRITE;
 INSERT INTO `integration_logs` VALUES 
 (1,'slack','outbound','dispatch_created','success','{\"challan_no\": \"DC-2627-001\", \"client\": \"NTPC Limited\", \"vehicle\": \"RJ-14-GC-8842\", \"net_weight\": \"20.00 MT\"}',200,'{\"ok\": true, \"channel\": \"#dispatch-alerts\"}','2026-10-22 17:15:00'),
 (2,'jira','outbound','qaqc_ncr_raised','success','{\"issue_key\": \"STEEL-1042\", \"summary\": \"UT Weld Joint Slag defect on ESP Panel\", \"project\": \"STEEL\"}',201,'{\"id\": \"10542\", \"key\": \"STEEL-1042\"}','2026-10-26 14:30:00'),
-(3,'email','outbound','dispatch_advice','success','{\"to\": \"procurement.ramagundam@ntpc.co.in\", \"challan_no\": \"DC-2627-001\", \"net_weight\": \"20.00 MT\", \"vehicle\": \"RJ-14-GC-8842\"}',250,'Message accepted for delivery','2026-10-22 17:16:00');
+(3,'email','outbound','dispatch_advice','success','{\"to\": \"procurement.ramagundam@ntpc.co.in\", \"challan_no\": \"DC-2627-001\", \"net_weight\": \"20.00 MT\", \"vehicle\": \"RJ-14-GC-8842\"}',250,'Message accepted for delivery','2026-10-22 17:16:00'),
+(4,'clickup','outbound','create_task','success','{\"name\": \"[JOB-2627-001] Shop Floor Traveler: ESP Casing Panels\", \"list_id\": \"901800123456\", \"priority\": 2}',201,'{\"id\": \"clk_8692a7f\", \"status\": {\"status\": \"to do\"}}','2026-10-26 15:10:00');
 /*!40000 ALTER TABLE `integration_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

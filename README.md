@@ -184,6 +184,19 @@ This ERP is purpose-built to manage the end-to-end lifecycle for fabricators ser
   - Modal interface to compose custom client or plant engineer notifications on demand.
   - Automated integration audit logging for all outbound SMTP transmissions.
 
+### 19. ClickUp & Open-Source Project Management Integrations (ClickUp, Plane, OpenProject)
+* **Multi-Engine Project Management Support**:
+  - Direct integration with **ClickUp Cloud** via REST API v2 (`/api/v2/list/{list_id}/task`) using Personal API Tokens (`pk_...`).
+  - Full compatibility with self-hosted open-source alternatives like **Plane** (the open-source Jira/ClickUp alternative), **OpenProject**, and **Taiga** via custom API base URL configuration.
+* **Automated Shop Floor Work Packages**:
+  - **Job Order Traveler**: Auto-creates task packages upon Job Order release containing structural drawing numbers, steel plate specifications (IS 2062 / SA 516 Gr 70), allocated tonnage, target dispatch dates, and bay milestone checklists (Plate Cutting &rarr; Fit-Up &rarr; SAW Welding &rarr; NDT &rarr; SA 2.5 Blasting &rarr; Painting).
+  - **Quality Defect & NCR Ticketing**: Auto-creates Priority 1 (Urgent) task cards when weld joints fail Non-Destructive Testing (UT/RT/DPT) with joint ID, plate thickness, defect observations, and gouging/reweld checklists.
+  - **Machinery Breakdown Tasks**: Instant maintenance cards for heavy equipment (plate rolling machines, 1000T hydraulic presses, SAW gantries).
+* **Interactive UI & Audit Logging**:
+  - Dedicated ClickUp & Open-Source PM administration tab with test connection verification and live task preview cards.
+  - Quick-action task modal to link and push custom tasks directly from active Job Orders into ClickUp or Plane lists.
+  - Complete transmission audit logging with viewable JSON request/response payloads and offline simulation fallback.
+
 ---
 
 ## 🚀 Installation & Setup Guide

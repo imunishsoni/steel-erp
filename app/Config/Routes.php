@@ -197,13 +197,16 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->post('update-jira', 'Integrations::updateJira');
         $routes->post('update-slack', 'Integrations::updateSlack');
         $routes->post('update-email', 'Integrations::updateEmail');
+        $routes->post('update-clickup', 'Integrations::updateClickup');
         $routes->post('update-webhooks', 'Integrations::updateWebhooks');
         $routes->post('test-jira', 'Integrations::testJira');
         $routes->post('test-slack', 'Integrations::testSlack');
         $routes->post('test-email', 'Integrations::testEmail');
+        $routes->post('test-clickup', 'Integrations::testClickup');
         $routes->post('create-jira-issue', 'Integrations::createJiraIssue');
         $routes->post('send-slack-message', 'Integrations::sendSlackMessage');
         $routes->post('send-email', 'Integrations::sendManualEmail');
+        $routes->post('create-clickup-task', 'Integrations::createClickupTask');
         $routes->get('logs', 'Integrations::logs');
     });
 });

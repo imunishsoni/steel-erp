@@ -730,6 +730,9 @@
                         <p class="text-muted small mb-0">Connect fabrication operations with SMTP Email, Atlassian Jira, Slack channels &amp; automated webhook pipelines</p>
                     </div>
                     <div class="d-flex gap-2 mt-2 mt-sm-0">
+                        <button class="btn btn-outline-warning text-dark btn-sm" id="btnOpenDemoClickupModal">
+                            <i class="bi bi-check2-square me-1"></i> New ClickUp Task
+                        </button>
                         <button class="btn btn-outline-info btn-sm" id="btnOpenDemoEmailModal">
                             <i class="bi bi-envelope-plus me-1"></i> Compose Email
                         </button>
@@ -757,6 +760,11 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="demo-tab-email-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-email" type="button" role="tab">
                             <i class="bi bi-envelope-at me-2"></i>Email (SMTP)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="demo-tab-clickup-btn" data-bs-toggle="pill" data-bs-target="#demo-tab-clickup" type="button" role="tab">
+                            <i class="bi bi-check2-square me-2"></i>ClickUp &amp; Open-Source PM
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -1183,7 +1191,170 @@
                         </div>
                     </div>
 
-                    <!-- TAB 4: WEBHOOKS & API -->
+                    <!-- TAB 4: CLICKUP & OPEN-SOURCE PM -->
+                    <div class="tab-pane fade" id="demo-tab-clickup" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><i class="bi bi-check2-square me-2 text-warning"></i>ClickUp &amp; Open-Source Task Management</span>
+                                        <span class="badge bg-success" id="demoClickupStatusBadge">Active (Simulated)</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="demoFormClickupSettings">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="demoClickupEnabled" checked>
+                                                <label class="form-check-label fw-bold" for="demoClickupEnabled">Enable ClickUp / Open-Source PM Synchronization</label>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">Platform / Engine</label>
+                                                    <select class="form-select font-monospace" id="demoClickupPlatform">
+                                                        <option value="clickup" selected>ClickUp Cloud (REST API v2)</option>
+                                                        <option value="plane">Plane (Open-Source ClickUp/Jira Alternative)</option>
+                                                        <option value="openproject">OpenProject (Self-Hosted)</option>
+                                                        <option value="custom">Custom REST Task Gateway</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">API Base Endpoint URL</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoClickupUrl" value="https://api.clickup.com/api/v2">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">API Access Token</label>
+                                                    <input type="password" class="form-control font-monospace" id="demoClickupToken" value="demo_clickup_api_token">
+                                                    <div class="form-text">ClickUp Personal API Token (or Plane API Key).</div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small fw-bold">Team / Workspace ID</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoClickupTeam" value="9012345">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small fw-bold">List / Project ID</label>
+                                                    <input type="text" class="form-control font-monospace" id="demoClickupList" value="901800123456">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label small fw-bold">Default Task Priority</label>
+                                                    <select class="form-select font-monospace" id="demoClickupPriority">
+                                                        <option value="1">1 - Urgent (🔴 Red)</option>
+                                                        <option value="2" selected>2 - High (🟡 Yellow)</option>
+                                                        <option value="3">3 - Normal (🔵 Blue)</option>
+                                                        <option value="4">4 - Low (⚪ Grey)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-diagram-2 text-warning me-2"></i>Automated Shop Floor Event Triggers</h6>
+                                            <div class="row g-2">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvClickupJob" checked>
+                                                        <label class="form-check-label small" for="demoEvClickupJob">
+                                                            <strong>Job Order Released:</strong> Create task with structural drawing, tonnage &amp; bay milestone checklist
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvClickupNCR" checked>
+                                                        <label class="form-check-label small" for="demoEvClickupNCR">
+                                                            <strong>Quality Defect Raised:</strong> Urgent task for welding foreman &amp; TPI agency with joint defect specifics
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvClickupMaint" checked>
+                                                        <label class="form-check-label small" for="demoEvClickupMaint">
+                                                            <strong>Machine Breakdown:</strong> Maintenance ticket for plate rolls or SAW welding gantries
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="demoEvClickupDispatch" checked>
+                                                        <label class="form-check-label small" for="demoEvClickupDispatch">
+                                                            <strong>Consignment Dispatched:</strong> Gate clearance card with trailer number &amp; E-Way bill
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                                <button type="button" class="btn btn-outline-secondary" id="btnTestClickupDemo">
+                                                    <i class="bi bi-arrow-repeat me-1"></i> Test Connection
+                                                </button>
+                                                <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                                    <i class="bi bi-save me-1"></i> Save ClickUp Settings
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-info-circle me-2 text-info"></i>Why Fabricators Use ClickUp / Plane</span>
+                                    </div>
+                                    <div class="card-body small">
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark mb-1">1. Shop Floor Bay Kanban</h6>
+                                            <p class="text-muted mb-0">Track plate cutting, fit-up, SAW welding, stress relieving, and painting progress in visual board swimlanes.</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark mb-1">2. Plant Client Project Deliverables</h6>
+                                            <p class="text-muted mb-0">Manage NTPC, Adani, and UltraTech milestone packages with target dispatch dates and checklists.</p>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">3. Open-Source Data Sovereignty</h6>
+                                            <p class="text-muted mb-0">Self-host <strong>Plane</strong> or <strong>OpenProject</strong> on-premise at the factory without relying on third-party public cloud providers.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <span class="fw-bold"><i class="bi bi-card-checklist me-2 text-warning"></i>Live Task Format Preview</span>
+                                    </div>
+                                    <div class="card-body p-3 bg-light">
+                                        <div class="p-3 bg-white border rounded shadow-sm" id="demoClickupPreviewCard">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-flag-fill me-1"></i>High Priority</span>
+                                                <span class="badge bg-light text-dark border">TO DO</span>
+                                            </div>
+                                            <div class="fw-bold text-dark small mb-1">[JOB-2627-001] Shop Floor Traveler: ESP Casing Panels</div>
+                                            <p class="text-muted" style="font-size: 0.75rem;">Fabrication of 20.00 MT casing assemblies for NTPC Ramagundam STPP Stage-IV.</p>
+                                            <div class="d-flex gap-1 mb-2">
+                                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#job-order</span>
+                                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#shopfloor</span>
+                                                <span class="badge bg-secondary font-monospace" style="font-size: 0.65rem;">#bay-1</span>
+                                            </div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">
+                                                📅 Target: 45 Days &bull; 🏗️ Drawing: DWG-NTPC-ESP-01
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm border-0 bg-warning bg-opacity-10">
+                                    <div class="card-body text-center p-4">
+                                        <i class="bi bi-check2-square fs-1 text-warning mb-2"></i>
+                                        <h6 class="fw-bold">Create ClickUp / Plane Task</h6>
+                                        <p class="text-muted small">Push a work package, drawing review, or NCR ticket directly into your workspace list.</p>
+                                        <button class="btn btn-warning text-dark btn-sm fw-bold" onclick="$('#btnOpenDemoClickupModal').click();">
+                                            <i class="bi bi-plus-circle me-1"></i> New Task Card
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: WEBHOOKS & API -->
                     <div class="tab-pane fade" id="demo-tab-webhooks" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-lg-6">
@@ -2069,6 +2240,55 @@ Heavy Steel Fabricators Pvt. Ltd.</textarea>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-info text-white btn-sm"><i class="bi bi-send me-1"></i> Send Email Notice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE CLICKUP / PLANE TASK (DEMO) -->
+    <div class="modal fade" id="demoModalCreateClickup" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-check2-square me-2"></i>Create Task in ClickUp / Plane</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="demoFormCreateClickup">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Task Priority</label>
+                                <select class="form-select font-monospace" id="demoClickupModalPriority">
+                                    <option value="1">1 - Urgent (Defect NCR / Breakdown)</option>
+                                    <option value="2" selected>2 - High (Drawing &amp; Cutting Plan)</option>
+                                    <option value="3">3 - Normal (Fit-Up &amp; SAW Welding)</option>
+                                    <option value="4">4 - Low (Surface Preparation)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Link to Active Job Order</label>
+                                <select class="form-select" id="demoClickupModalJobSelect">
+                                    <option value="">-- Select Active Job Order --</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Task Name / Title</label>
+                                <input type="text" class="form-control" id="demoClickupModalName" placeholder="e.g. [JOB-2627-001] Ultrasonic Testing &amp; Radiography Review for ESP Casings" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Task Markdown Description</label>
+                                <textarea class="form-control font-monospace" id="demoClickupModalDesc" rows="4" placeholder="Milestone checklist, plate specifications (IS 2062 / SA 516 Gr 70), Bay assignment, or NDT defect observations." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Tags (Comma Separated)</label>
+                                <input type="text" class="form-control font-monospace" id="demoClickupModalTags" value="shopfloor, job-order, fabrication">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning text-dark btn-sm fw-bold"><i class="bi bi-plus-circle me-1"></i> Create Task</button>
                     </div>
                 </form>
             </div>
