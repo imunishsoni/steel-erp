@@ -153,6 +153,9 @@
                 <a href="#production" class="sidebar-nav-link">
                     <i class="bi bi-gear-wide-connected"></i> Job Orders &amp; Route Cards
                 </a>
+                <a href="#tickets" class="sidebar-nav-link">
+                    <i class="bi bi-ticket-perforated"></i> Issue Tracker &amp; CAPA
+                </a>
 
                 <!-- LOGISTICS & ACCOUNTS -->
                 <div class="sidebar-heading">Dispatch &amp; Accounts</div>
@@ -542,6 +545,165 @@
                                     <th>Priority</th>
                                     <th>Status</th>
                                     <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: IN-BUILT TICKETING & CAPA -->
+            <div id="view-tickets" class="app-view-section container-fluid py-4 d-none">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-ticket-perforated text-primary me-2"></i>In-Built Issue Tracker &amp; CAPA System</h4>
+                        <p class="text-muted small mb-0">Shop Floor Non-Conformance Reports (NCR), Drawing RFIs, Equipment Breakdowns, HSE Incidents &amp; Client Punch Lists</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="btnOpenDemoTicketModal" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i> Raise Issue / NCR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm border-start border-primary border-4 h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Total Issues</div>
+                                        <div class="fs-4 fw-bold text-dark mt-1" id="demoStatTotalTickets">5</div>
+                                        <div class="small text-muted">All registered cases</div>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                                        <i class="bi bi-journal-text fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm border-start border-warning border-4 h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Active / Open</div>
+                                        <div class="fs-4 fw-bold text-warning mt-1" id="demoStatOpenTickets">3</div>
+                                        <div class="small text-muted">Requires shop resolution</div>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle">
+                                        <i class="bi bi-exclamation-triangle fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm border-start border-danger border-4 h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Urgent / Critical</div>
+                                        <div class="fs-4 fw-bold text-danger mt-1" id="demoStatUrgentTickets">2</div>
+                                        <div class="small text-muted">High-priority bottlenecks</div>
+                                    </div>
+                                    <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle">
+                                        <i class="bi bi-fire fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm border-start border-success border-4 h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted small fw-semibold text-uppercase">Closed / Resolved</div>
+                                        <div class="fs-4 fw-bold text-success mt-1" id="demoStatClosedTickets">2</div>
+                                        <div class="small text-muted">CAPA verified &amp; signed off</div>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
+                                        <i class="bi bi-check2-circle fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters & Category Navigation -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body p-3">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div class="btn-group btn-group-sm flex-wrap" role="group" id="demoTicketCategoryPills">
+                                <button type="button" class="btn btn-outline-secondary active" data-cat="all">All Issues</button>
+                                <button type="button" class="btn btn-outline-secondary" data-cat="quality_ncr">Quality NCR</button>
+                                <button type="button" class="btn btn-outline-secondary" data-cat="drawing_rfi">Drawing RFI</button>
+                                <button type="button" class="btn btn-outline-secondary" data-cat="machine_breakdown">Machine Breakdown</button>
+                                <button type="button" class="btn btn-outline-secondary" data-cat="safety_hazard">Safety HSE</button>
+                                <button type="button" class="btn btn-outline-secondary" data-cat="client_punch">Client Punch</button>
+                            </div>
+                            <div class="small text-muted">
+                                <i class="bi bi-info-circle me-1"></i> In-Built CAPA module links directly with ISO 9001:2015 &amp; AWS D1.1 QA standards
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" class="form-control" id="demoTicketSearch" placeholder="Search ticket #, defect, client, job order, or department...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select form-select-sm" id="demoTicketStatusFilter">
+                                    <option value="all">All Statuses</option>
+                                    <option value="open">Open</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="under_review">Under Review / TPI</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select form-select-sm" id="demoTicketPriorityFilter">
+                                    <option value="all">All Priorities</option>
+                                    <option value="critical">Critical (Line Stoppage)</option>
+                                    <option value="urgent">Urgent</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 d-grid">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnResetTicketFilters" title="Reset Filters">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets Data Table -->
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="demoTicketsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Priority</th>
+                                    <th>Category</th>
+                                    <th>Issue / Non-Conformance</th>
+                                    <th>Job Order / Client</th>
+                                    <th>Assigned Dept / Lead</th>
+                                    <th>Target Date</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -2311,6 +2473,277 @@ Heavy Steel Fabricators Pvt. Ltd.</textarea>
                     <pre id="demoLogModalResponse" class="bg-light p-3 rounded font-monospace small" style="max-height: 200px; overflow-y: auto;"></pre>
                 </div>
                 <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RAISE NEW TICKET / QUALITY NCR (DEMO) -->
+    <div class="modal fade" id="demoModalCreateTicket" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-ticket-perforated me-2"></i>Raise Issue / Quality NCR / RFI</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="demoFormCreateTicket">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Ticket Number</label>
+                                <input type="text" class="form-control font-monospace bg-light" id="demoTicketModalNo" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold required">Category</label>
+                                <select class="form-select" id="demoTicketModalCategory" required>
+                                    <option value="quality_ncr">Quality NCR (Welding / NDT / Dimensional)</option>
+                                    <option value="drawing_rfi">Drawing RFI (Engineering Clarification)</option>
+                                    <option value="machine_breakdown">Machine Breakdown (Press / CNC / Crane)</option>
+                                    <option value="safety_hazard">Safety &amp; HSE Incident</option>
+                                    <option value="client_punch">Client Pre-Dispatch Punch List</option>
+                                    <option value="fabrication_defect">Fabrication Fit-Up Defect</option>
+                                    <option value="general">General Plant Maintenance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold required">Priority</label>
+                                <select class="form-select font-monospace" id="demoTicketModalPriority" required>
+                                    <option value="critical">Critical (Shop Floor Stoppage)</option>
+                                    <option value="urgent" selected>Urgent (TPI / Dispatch Gate Block)</option>
+                                    <option value="high">High (Action Required in 24h)</option>
+                                    <option value="medium">Medium (Standard Milestone)</option>
+                                    <option value="low">Low (Non-critical Punch Point)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Link to Job Order</label>
+                                <select class="form-select" id="demoTicketModalJobSelect">
+                                    <option value="">-- None / General Plant --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Link to Client</label>
+                                <select class="form-select" id="demoTicketModalClientSelect">
+                                    <option value="">-- None / Internal --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold required">Department</label>
+                                <select class="form-select" id="demoTicketModalDepartment" required>
+                                    <option value="qa_qc">QA / QC &amp; Welding Inspection</option>
+                                    <option value="production_bay1">Production - Bay 1 (Heavy Structurals)</option>
+                                    <option value="production_bay2">Production - Bay 2 (Vessels &amp; Tanks)</option>
+                                    <option value="design_engineering">Design &amp; Engineering</option>
+                                    <option value="maintenance">Plant &amp; Machinery Maintenance</option>
+                                    <option value="safety_hse">Safety &amp; HSE</option>
+                                    <option value="logistics">Logistics &amp; Dispatch</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold required">Assigned Lead / Inspector</label>
+                                <input type="text" class="form-control" id="demoTicketModalAssigned" placeholder="e.g. Rajesh Sharma (QA Lead)" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold required">Target Resolution Date</label>
+                                <input type="date" class="form-control" id="demoTicketModalTargetDate" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Issue Title / Subject</label>
+                                <input type="text" class="form-control" id="demoTicketModalTitle" placeholder="e.g. Ultrasonic Testing Defect: Slag Inclusion on Joint WJ-02 (ESP Casing)" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold required">Defect Description / Technical Observations</label>
+                                <textarea class="form-control font-monospace" id="demoTicketModalDescription" rows="3" placeholder="Provide full details: location, plate thickness, defect size/depth, joint number, TPI witness remarks, or equipment error codes." required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Initial Root Cause Analysis (5-Why)</label>
+                                <textarea class="form-control" id="demoTicketModalRootCause" rows="2" placeholder="e.g. High-speed SAW welding pass resulted in weld flux entrapment under bevel angle."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Corrective &amp; Preventive Action (CAPA)</label>
+                                <textarea class="form-control" id="demoTicketModalCapa" rows="2" placeholder="e.g. Carbon-arc gouging to sound parent metal, DP check, and reweld with low-hydrogen electrodes."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm fw-bold"><i class="bi bi-check-circle me-1"></i> Register Issue / Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VIEW TICKET TRAVELER & CAPA (DEMO) -->
+    <div class="modal fade" id="demoModalTicketDetail" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-dark font-monospace fs-6" id="demoViewTicketNo">TCK-000</span>
+                            <span id="demoViewTicketStatusBadge"></span>
+                            <span id="demoViewTicketPriorityBadge"></span>
+                            <span id="demoViewTicketCategoryBadge"></span>
+                        </div>
+                        <h5 class="modal-title fw-bold mt-2" id="demoViewTicketTitle">Issue Title</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    <div class="row g-4">
+                        <!-- Left Column: Details, Root Cause & CAPA -->
+                        <div class="col-lg-7">
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header bg-white fw-bold py-2">
+                                    <i class="bi bi-info-circle text-primary me-2"></i>Case Overview &amp; Tracking
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3 small">
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Associated Job Order</div>
+                                            <div class="fw-bold" id="demoViewTicketJob">--</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Client / Consignee</div>
+                                            <div class="fw-bold" id="demoViewTicketClient">--</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Department</div>
+                                            <div class="fw-bold" id="demoViewTicketDept">--</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Assigned Lead</div>
+                                            <div class="fw-bold" id="demoViewTicketAssigned">--</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Created Date</div>
+                                            <div id="demoViewTicketCreated">--</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="text-muted">Target Resolution Date</div>
+                                            <div class="fw-bold text-danger" id="demoViewTicketTargetDate">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header bg-white fw-bold py-2">
+                                    <i class="bi bi-file-earmark-text text-danger me-2"></i>Technical Description &amp; Findings
+                                </div>
+                                <div class="card-body">
+                                    <div class="font-monospace small bg-light p-3 rounded border text-secondary" id="demoViewTicketDesc">
+                                        --
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header bg-white fw-bold py-2 text-warning">
+                                    <i class="bi bi-question-circle-fill me-2"></i>5-Why Root Cause Analysis
+                                </div>
+                                <div class="card-body">
+                                    <div class="small p-2 bg-warning bg-opacity-10 rounded border border-warning" id="demoViewTicketRootCause">
+                                        No root cause specified yet.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header bg-white fw-bold py-2 text-success">
+                                    <i class="bi bi-shield-check me-2"></i>Corrective &amp; Preventive Action (CAPA) Plan
+                                </div>
+                                <div class="card-body">
+                                    <div class="small p-2 bg-success bg-opacity-10 rounded border border-success" id="demoViewTicketCapa">
+                                        No CAPA recorded yet.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advance Status & CAPA Form -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white fw-bold py-2">
+                                    <i class="bi bi-pencil-square text-primary me-2"></i>Update Status &amp; Action Plan
+                                </div>
+                                <div class="card-body">
+                                    <form id="demoFormUpdateTicketStatus">
+                                        <input type="hidden" id="demoUpdateTicketId">
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold">Update Status</label>
+                                                <select class="form-select form-select-sm" id="demoUpdateTicketStatusSelect">
+                                                    <option value="open">Open</option>
+                                                    <option value="in_progress">In Progress</option>
+                                                    <option value="under_review">Under Review / TPI</option>
+                                                    <option value="resolved">Resolved</option>
+                                                    <option value="closed">Closed &amp; Signed Off</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold">Update Priority</label>
+                                                <select class="form-select form-select-sm" id="demoUpdateTicketPrioritySelect">
+                                                    <option value="critical">Critical</option>
+                                                    <option value="urgent">Urgent</option>
+                                                    <option value="high">High</option>
+                                                    <option value="medium">Medium</option>
+                                                    <option value="low">Low</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small fw-bold">5-Why Root Cause</label>
+                                                <textarea class="form-control form-control-sm" id="demoUpdateTicketRootCause" rows="2" placeholder="Root cause breakdown..."></textarea>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small fw-bold">CAPA Action Taken / Preventive Measure</label>
+                                                <textarea class="form-control form-control-sm" id="demoUpdateTicketCapa" rows="2" placeholder="Details of repair, re-testing, procedure changes..."></textarea>
+                                            </div>
+                                            <div class="col-12 text-end">
+                                                <button type="submit" class="btn btn-sm btn-primary fw-bold">
+                                                    <i class="bi bi-save me-1"></i> Save Changes &amp; Status
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Timeline & Comments -->
+                        <div class="col-lg-5">
+                            <div class="card border-0 shadow-sm h-100 d-flex flex-column">
+                                <div class="card-header bg-white fw-bold py-2 d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-clock-history text-secondary me-2"></i>Action &amp; Inspection Timeline</span>
+                                    <span class="badge bg-secondary rounded-pill" id="demoViewTicketCommentCount">0</span>
+                                </div>
+                                <div class="card-body p-3 flex-grow-1" style="max-height: 480px; overflow-y: auto;" id="demoViewTicketTimeline">
+                                    <!-- Dynamic comments timeline -->
+                                </div>
+                                <div class="card-footer bg-light p-3">
+                                    <form id="demoFormAddTicketComment">
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Post Inspection Update / Comment</label>
+                                            <div class="d-flex gap-2 mb-2">
+                                                <select class="form-select form-select-sm" id="demoCommentActionType" style="max-width: 160px;">
+                                                    <option value="comment">Comment</option>
+                                                    <option value="capa_update">CAPA Update</option>
+                                                    <option value="status_change">Inspection Log</option>
+                                                </select>
+                                                <input type="text" class="form-control form-control-sm" id="demoCommentAuthor" placeholder="Author name" value="Er. Munish Soni (Admin)">
+                                            </div>
+                                            <textarea class="form-control form-control-sm font-monospace" id="demoCommentText" rows="3" placeholder="Enter inspection findings, repair progress, or engineering clarification..." required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-dark w-100 fw-bold">
+                                            <i class="bi bi-send me-1"></i> Post to Traveler Timeline
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

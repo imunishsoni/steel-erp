@@ -711,7 +711,165 @@
                     response: { id: "clk_8692a7f", status: { status: "to do" } }
                 }
             ]
-        }
+        },
+        tickets: [
+            {
+                id: 1,
+                ticketNo: "TCK-2627-001",
+                title: "UT Slag Inclusion on 32mm ESP Casing Weld Joint WJ-01",
+                category: "quality_ncr",
+                priority: "urgent",
+                status: "in_progress",
+                jobOrderId: 1,
+                jobNo: "JOB-2627-001",
+                clientId: 1,
+                clientName: "NTPC Limited (Ramagundam STPP)",
+                department: "qa_qc",
+                departmentLabel: "QA / QC & Welding Inspection",
+                assignedTo: "Rajesh Sharma (Welding Inspector)",
+                description: "During 100% Ultrasonic Testing (UT) as per AWS D1.1 on NTPC 800MW ESP Casing panel Joint WJ-01, linear slag inclusion of length 24mm detected at depth 14mm in SAW root pass. Requires carbon arc gouging and re-examination by TPI agency.",
+                rootCause: "Weld flux trapping during high-speed SAW tractor pass on bevel angle 45 deg.",
+                capa: "Gouging completed to sound parent metal. Dye-penetrant test confirmed slag removal. Reweld in progress with 4mm E7018 low-hydrogen electrodes.",
+                targetDate: "2026-11-05",
+                resolvedAt: null,
+                createdAt: "2026-10-26 14:15:00",
+                comments: [
+                    {
+                        id: 1,
+                        author: "Munish Soni (Admin)",
+                        actionType: "comment",
+                        comment: "Urgent notification dispatched to Bay 1 Welding Foreman and Quality QA Manager. Gouging team mobilized.",
+                        createdAt: "2026-10-26 14:30:00"
+                    },
+                    {
+                        id: 2,
+                        author: "Rajesh Sharma (Welding Inspector)",
+                        actionType: "capa_update",
+                        comment: "Carbon arc gouging completed. Dye-penetrant test shows defect completely eliminated. Preheat maintained at 150 deg C with ceramic heating pads. Rewelding in progress.",
+                        createdAt: "2026-10-27 10:30:00"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                ticketNo: "TCK-2627-002",
+                title: "RFI: Gusset Plate Thickness Clarification for Cyclone Preheater",
+                category: "drawing_rfi",
+                priority: "high",
+                status: "under_review",
+                jobOrderId: 2,
+                jobNo: "JOB-2627-002",
+                clientId: 6,
+                clientName: "Shree Cement Ltd (Ras Plant)",
+                department: "design_engineering",
+                departmentLabel: "Design & Engineering",
+                assignedTo: "Amit Verma (Design Lead)",
+                description: "Drawing DWG-SHREE-CYC-04 shows connection gusset plate thickness as 16mm in section A-A but 20mm in bill of materials for White Cement Kiln-2 Cyclone Preheater. Requesting formal engineering confirmation from Shree Cement design team before CNC oxy-fuel cutting.",
+                rootCause: "Drawing revision typo between structural detail and BOM schedule.",
+                capa: "Submitted formal RFI #DCR-88 to Shree Cement consulting engineers. Awaiting signed revision approval.",
+                targetDate: "2026-11-02",
+                resolvedAt: null,
+                createdAt: "2026-10-27 09:30:00",
+                comments: [
+                    {
+                        id: 3,
+                        author: "Amit Verma (Design Lead)",
+                        actionType: "comment",
+                        comment: "Drafted formal Engineering Query memo to Shree Cement head office with marked-up GA drawings.",
+                        createdAt: "2026-10-27 11:45:00"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                ticketNo: "TCK-2627-003",
+                title: "1000-Ton Hydraulic Plate Press Hydraulic Oil Seal Leakage",
+                category: "machine_breakdown",
+                priority: "critical",
+                status: "resolved",
+                jobOrderId: 1,
+                jobNo: "JOB-2627-001",
+                clientId: null,
+                clientName: "Plant Internal Maintenance",
+                department: "maintenance",
+                departmentLabel: "Plant & Machinery Maintenance",
+                assignedTo: "Suresh Kumar (Maintenance Lead)",
+                description: "Main cylinder packing seal on Bay 1 1000-ton hydraulic bending press ruptured under 250 bar pressure while rolling 50mm SA 516 Gr 70 boiler plate shells. Shell rolling halted on Job order JOB-2627-001.",
+                rootCause: "Hydraulic oil seal degradation after 1800 running hours without intermediate pressure relief valve check.",
+                capa: "Replaced primary piston polyurethane seal kit and backup rings. Flushed ISO VG 68 hydraulic oil. Pressure tested to 300 bar for 45 minutes without drop. Press released for production.",
+                targetDate: "2026-10-29",
+                resolvedAt: "2026-10-29 16:45:00",
+                createdAt: "2026-10-28 08:15:00",
+                comments: [
+                    {
+                        id: 4,
+                        author: "Suresh Kumar (Maintenance Lead)",
+                        actionType: "status_change",
+                        comment: "Changed status from OPEN to IN PROGRESS. Hydraulic cylinder uncoupled from gantry for seal overhaul.",
+                        createdAt: "2026-10-28 09:00:00"
+                    },
+                    {
+                        id: 5,
+                        author: "Suresh Kumar (Maintenance Lead)",
+                        actionType: "capa_update",
+                        comment: "Seal kit replaced. Hydraulic pressure tested to 300 bar for 45 mins. Machine certified and released for 50mm shell plate bending.",
+                        createdAt: "2026-10-29 16:45:00"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                ticketNo: "TCK-2627-004",
+                title: "Overhead EOT Crane 25T Hoist Wire Rope Rigging Inspection",
+                category: "safety_hazard",
+                priority: "medium",
+                status: "closed",
+                jobOrderId: null,
+                jobNo: null,
+                clientId: null,
+                clientName: "Internal Plant HSE",
+                department: "safety_hse",
+                departmentLabel: "Safety & HSE",
+                assignedTo: "Suresh Kumar (Maintenance Lead)",
+                description: "Monthly statutory wire rope inspection of 25T EOT Crane in Heavy Bay 2 revealed 3 broken outer wires near equalizer sheave. Required immediate crane lockout and wire rope replacement prior to lifting 20 MT casing assemblies.",
+                rootCause: "Normal fatigue wear from multi-shift heavy girder tilting maneuvers.",
+                capa: "Replaced 24mm 6x36 IWRC steel wire rope. Conducted proof load test with 31.25 MT test weight (125% safe working load). Third-party safety fitness certificate issued by Government approved inspector.",
+                targetDate: "2026-10-30",
+                resolvedAt: "2026-10-30 18:00:00",
+                createdAt: "2026-10-28 12:00:00",
+                comments: [
+                    {
+                        id: 6,
+                        author: "Suresh Kumar (Maintenance Lead)",
+                        actionType: "status_change",
+                        comment: "Overhead Crane 25T proof load tested with 31.25 MT load and cleared by Chief Factory Inspector. Ticket closed.",
+                        createdAt: "2026-10-30 18:00:00"
+                    }
+                ]
+            },
+            {
+                id: 5,
+                ticketNo: "TCK-2627-005",
+                title: "Pre-Dispatch DFT Dry Film Thickness Punch Point for Adani STPP",
+                category: "client_punch",
+                priority: "high",
+                status: "open",
+                jobOrderId: null,
+                jobNo: null,
+                clientId: 2,
+                clientName: "Adani Power (Mundra) Limited",
+                department: "qa_qc",
+                departmentLabel: "QA / QC & Welding Inspection",
+                assignedTo: "Rajesh Sharma (Welding Inspector)",
+                description: "Client pre-shipment inspection engineer (Adani Power) flagged that bottom flange underside paint thickness on 4 girder assemblies measures 110 microns against specified 150 microns PU topcoat (RAL 7035). Requires additional coat before gate release.",
+                rootCause: "Inadequate spray overlap under bottom flange shadow area during high-build epoxy application.",
+                capa: "Touch-up airless spray painting scheduled in Bay 2 painting booth after surface degreasing. Clearance inspection booked for tomorrow morning.",
+                targetDate: "2026-11-08",
+                resolvedAt: null,
+                createdAt: "2026-10-28 15:00:00",
+                comments: []
+            }
+        ]
     };
 
     // LocalStorage Key
@@ -737,6 +895,10 @@
                         appData.integrations.clickup = JSON.parse(JSON.stringify(defaultData.integrations.clickup));
                         saveData();
                     }
+                }
+                if (!appData.tickets) {
+                    appData.tickets = JSON.parse(JSON.stringify(defaultData.tickets));
+                    saveData();
                 }
             } catch (e) {
                 console.error("Failed to parse stored Steel ERP data. Reverting to defaults.", e);
@@ -1269,6 +1431,171 @@
         $('#demoJiraModalJobSelect, #demoClickupModalJobSelect').html(jobOptions);
     }
 
+    function getTicketCategoryBadge(cat) {
+        switch (cat) {
+            case 'quality_ncr':
+                return '<span class="badge bg-danger"><i class="bi bi-shield-x me-1"></i>Quality NCR</span>';
+            case 'drawing_rfi':
+                return '<span class="badge bg-info text-dark"><i class="bi bi-file-earmark-ruled me-1"></i>Drawing RFI</span>';
+            case 'machine_breakdown':
+                return '<span class="badge bg-danger text-white"><i class="bi bi-tools me-1"></i>Breakdown</span>';
+            case 'safety_hazard':
+                return '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle-fill me-1"></i>Safety HSE</span>';
+            case 'client_punch':
+                return '<span class="badge bg-primary"><i class="bi bi-person-exclamation me-1"></i>Client Punch</span>';
+            case 'fabrication_defect':
+                return '<span class="badge bg-dark"><i class="bi bi-wrench me-1"></i>Fit-Up Defect</span>';
+            case 'material_defect':
+                return '<span class="badge bg-secondary"><i class="bi bi-box-seam me-1"></i>Material Defect</span>';
+            default:
+                return `<span class="badge bg-light text-dark border">${cat ? cat.replace('_', ' ').toUpperCase() : 'GENERAL'}</span>`;
+        }
+    }
+
+    function getTicketPriorityBadge(prio) {
+        switch (prio) {
+            case 'critical':
+                return '<span class="badge bg-danger text-uppercase fw-bold"><i class="bi bi-fire me-1"></i>Critical</span>';
+            case 'urgent':
+                return '<span class="badge bg-warning text-dark text-uppercase fw-bold"><i class="bi bi-lightning-fill me-1"></i>Urgent</span>';
+            case 'high':
+                return '<span class="badge bg-primary text-uppercase">High</span>';
+            case 'medium':
+                return '<span class="badge bg-info text-dark text-uppercase">Medium</span>';
+            case 'low':
+                return '<span class="badge bg-secondary text-uppercase">Low</span>';
+            default:
+                return `<span class="badge bg-secondary text-uppercase">${prio || 'NORMAL'}</span>`;
+        }
+    }
+
+    function getTicketStatusBadge(status) {
+        switch (status) {
+            case 'open':
+                return '<span class="badge bg-warning text-dark">Open</span>';
+            case 'in_progress':
+                return '<span class="badge bg-primary">In Progress</span>';
+            case 'under_review':
+                return '<span class="badge bg-info text-dark">Under Review / TPI</span>';
+            case 'resolved':
+                return '<span class="badge bg-success">Resolved</span>';
+            case 'closed':
+                return '<span class="badge bg-secondary">Closed &amp; Signed Off</span>';
+            default:
+                return `<span class="badge bg-secondary">${status}</span>`;
+        }
+    }
+
+    let activeTicketCategory = 'all';
+
+    function renderTickets() {
+        const tickets = appData.tickets || [];
+
+        // KPI Counters
+        const total = tickets.length;
+        const open = tickets.filter(t => t.status === 'open' || t.status === 'in_progress' || t.status === 'under_review').length;
+        const urgent = tickets.filter(t => t.priority === 'urgent' || t.priority === 'critical').length;
+        const closed = tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
+
+        $('#demoStatTotalTickets').text(total);
+        $('#demoStatOpenTickets').text(open);
+        $('#demoStatUrgentTickets').text(urgent);
+        $('#demoStatClosedTickets').text(closed);
+
+        // Apply filters
+        const search = ($('#demoTicketSearch').val() || '').toLowerCase().trim();
+        const statusFilter = $('#demoTicketStatusFilter').val() || 'all';
+        const priorityFilter = $('#demoTicketPriorityFilter').val() || 'all';
+
+        let filtered = tickets.filter(t => {
+            if (activeTicketCategory !== 'all' && t.category !== activeTicketCategory) return false;
+            if (statusFilter !== 'all' && t.status !== statusFilter) return false;
+            if (priorityFilter !== 'all' && t.priority !== priorityFilter) return false;
+
+            if (search) {
+                const combined = [
+                    t.ticketNo,
+                    t.title,
+                    t.description,
+                    t.clientName,
+                    t.jobNo,
+                    t.departmentLabel || t.department,
+                    t.assignedTo
+                ].filter(Boolean).join(' ').toLowerCase();
+
+                if (!combined.includes(search)) return false;
+            }
+            return true;
+        });
+
+        let rowsHtml = '';
+        if (filtered.length === 0) {
+            rowsHtml = `
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        No tickets or CAPA records match the selected filters.
+                    </td>
+                </tr>
+            `;
+        } else {
+            filtered.forEach(t => {
+                const jobLabel = t.jobNo ? `<span class="font-monospace fw-bold text-dark">${t.jobNo}</span>` : '<span class="text-muted">General / Shop</span>';
+                const clientLabel = t.clientName ? `<div class="small text-muted text-truncate" style="max-width: 170px;">${t.clientName}</div>` : '';
+                const deptLabel = t.departmentLabel || (t.department ? t.department.replace('_', ' ').toUpperCase() : 'General');
+
+                rowsHtml += `
+                    <tr>
+                        <td>
+                            <strong class="font-monospace text-primary">${t.ticketNo}</strong>
+                            <div class="small text-muted">${(t.createdAt || '').substring(0, 10)}</div>
+                        </td>
+                        <td>${getTicketPriorityBadge(t.priority)}</td>
+                        <td>${getTicketCategoryBadge(t.category)}</td>
+                        <td>
+                            <div class="fw-bold text-dark">${t.title}</div>
+                            <div class="small text-muted text-truncate" style="max-width: 320px;">${t.description}</div>
+                        </td>
+                        <td>
+                            ${jobLabel}
+                            ${clientLabel}
+                        </td>
+                        <td>
+                            <div class="small fw-semibold text-dark">${deptLabel}</div>
+                            <div class="small text-muted"><i class="bi bi-person me-1"></i>${t.assignedTo || 'Unassigned'}</div>
+                        </td>
+                        <td>
+                            <span class="small font-monospace ${t.status !== 'closed' && t.status !== 'resolved' ? 'text-danger fw-bold' : 'text-muted'}">
+                                ${t.targetDate || '--'}
+                            </span>
+                        </td>
+                        <td>${getTicketStatusBadge(t.status)}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary view-ticket-btn" data-id="${t.id}" title="View Ticket Traveler &amp; CAPA">
+                                <i class="bi bi-eye me-1"></i> Traveler
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        $('#demoTicketsTable tbody').html(rowsHtml);
+
+        // Update Job Order & Client dropdowns in Create Ticket Modal
+        let jobOptionsHtml = '<option value="">-- None / General Plant --</option>';
+        (appData.productionJobs || []).forEach(j => {
+            jobOptionsHtml += `<option value="${j.id}" data-no="${j.jobNo}" data-client="${j.client}">${j.jobNo} (${j.client})</option>`;
+        });
+        $('#demoTicketModalJobSelect').html(jobOptionsHtml);
+
+        let clientOptionsHtml = '<option value="">-- None / Internal --</option>';
+        (appData.clients || []).forEach(c => {
+            clientOptionsHtml += `<option value="${c.id}" data-name="${c.name}">${c.code} - ${c.name}</option>`;
+        });
+        $('#demoTicketModalClientSelect').html(clientOptionsHtml);
+    }
+
     function renderAll() {
         renderDashboard();
         renderClients('all');
@@ -1279,6 +1606,7 @@
         renderQuotations();
         renderQAQC();
         renderIntegrations();
+        renderTickets();
     }
 
     // Navigation Switcher (SPA tabs)
@@ -2368,6 +2696,268 @@
             saveData();
             renderIntegrations();
             showToast('ClickUp / Open-Source PM settings saved!', 'success');
+        });
+
+        // ==========================================
+        // IN-BUILT TICKETS & CAPA EVENT HANDLERS
+        // ==========================================
+
+        $('#demoTicketCategoryPills button').on('click', function () {
+            $('#demoTicketCategoryPills button').removeClass('active');
+            $(this).addClass('active');
+            activeTicketCategory = $(this).data('cat');
+            renderTickets();
+        });
+
+        $('#demoTicketSearch, #demoTicketStatusFilter, #demoTicketPriorityFilter').on('input change', function () {
+            renderTickets();
+        });
+
+        $('#btnResetTicketFilters').on('click', function () {
+            activeTicketCategory = 'all';
+            $('#demoTicketCategoryPills button').removeClass('active');
+            $('#demoTicketCategoryPills button[data-cat="all"]').addClass('active');
+            $('#demoTicketSearch').val('');
+            $('#demoTicketStatusFilter').val('all');
+            $('#demoTicketPriorityFilter').val('all');
+            renderTickets();
+            showToast('Ticket filters reset', 'info');
+        });
+
+        $('#btnOpenDemoTicketModal').on('click', function () {
+            const nextId = (appData.tickets || []).length + 1;
+            const seqStr = String(nextId).padStart(3, '0');
+            const newTicketNo = `TCK-2627-${seqStr}`;
+
+            const d = new Date();
+            d.setDate(d.getDate() + 7);
+            const targetDateStr = d.toISOString().split('T')[0];
+
+            $('#demoTicketModalNo').val(newTicketNo);
+            $('#demoTicketModalTargetDate').val(targetDateStr);
+            $('#demoModalCreateTicket').modal('show');
+        });
+
+        $('#demoFormCreateTicket').on('submit', function (e) {
+            e.preventDefault();
+
+            const nextId = (appData.tickets || []).length ? Math.max(...appData.tickets.map(t => t.id)) + 1 : 1;
+            const ticketNo = $('#demoTicketModalNo').val() || `TCK-2627-${String(nextId).padStart(3, '0')}`;
+            const category = $('#demoTicketModalCategory').val();
+            const priority = $('#demoTicketModalPriority').val();
+            const jobId = parseInt($('#demoTicketModalJobSelect').val()) || null;
+            const clientId = parseInt($('#demoTicketModalClientSelect').val()) || null;
+            const department = $('#demoTicketModalDepartment').val();
+            const assignedTo = $('#demoTicketModalAssigned').val();
+            const targetDate = $('#demoTicketModalTargetDate').val();
+            const title = $('#demoTicketModalTitle').val();
+            const description = $('#demoTicketModalDescription').val();
+            const rootCause = $('#demoTicketModalRootCause').val();
+            const capa = $('#demoTicketModalCapa').val();
+
+            let jobNo = null;
+            if (jobId && appData.productionJobs) {
+                const foundJob = appData.productionJobs.find(j => j.id === jobId);
+                if (foundJob) jobNo = foundJob.jobNo;
+            }
+
+            let clientName = null;
+            if (clientId && appData.clients) {
+                const foundCli = appData.clients.find(c => c.id === clientId);
+                if (foundCli) clientName = foundCli.name;
+            }
+
+            const deptMap = {
+                qa_qc: 'QA / QC & Welding Inspection',
+                production_bay1: 'Production - Bay 1',
+                production_bay2: 'Production - Bay 2',
+                design_engineering: 'Design & Engineering',
+                maintenance: 'Maintenance',
+                safety_hse: 'Safety & HSE',
+                logistics: 'Logistics'
+            };
+
+            const now = new Date();
+            const nowStr = now.toISOString().replace('T', ' ').substring(0, 19);
+
+            const newTicket = {
+                id: nextId,
+                ticketNo: ticketNo,
+                title: title,
+                category: category,
+                priority: priority,
+                status: 'open',
+                jobOrderId: jobId,
+                jobNo: jobNo,
+                clientId: clientId,
+                clientName: clientName,
+                department: department,
+                departmentLabel: deptMap[department] || department,
+                assignedTo: assignedTo,
+                description: description,
+                rootCause: rootCause || '',
+                capa: capa || '',
+                targetDate: targetDate,
+                resolvedAt: null,
+                createdAt: nowStr,
+                comments: [
+                    {
+                        id: 1,
+                        author: 'Er. Munish Soni (Admin)',
+                        actionType: 'comment',
+                        comment: `Ticket registered on shop floor: ${title}`,
+                        createdAt: nowStr
+                    }
+                ]
+            };
+
+            if (!appData.tickets) appData.tickets = [];
+            appData.tickets.unshift(newTicket);
+            saveData();
+            renderTickets();
+
+            $('#demoModalCreateTicket').modal('hide');
+            this.reset();
+            showToast(`Issue ${ticketNo} registered successfully!`, 'success');
+        });
+
+        let activeTicketId = null;
+
+        function renderTicketTimeline(ticket) {
+            const comments = ticket.comments || [];
+            $('#demoViewTicketCommentCount').text(comments.length);
+
+            if (comments.length === 0) {
+                $('#demoViewTicketTimeline').html('<div class="text-center text-muted small py-4">No comments or action logs yet.</div>');
+                return;
+            }
+
+            let timelineHtml = '<div class="timeline position-relative ps-2">';
+            comments.forEach(c => {
+                const badge = c.actionType === 'capa_update' ? '<span class="badge bg-success">CAPA Update</span>' :
+                             (c.actionType === 'status_change' ? '<span class="badge bg-info text-dark">Status Change</span>' :
+                             '<span class="badge bg-secondary">Comment</span>');
+
+                timelineHtml += `
+                    <div class="mb-3 border-start border-2 border-primary ps-3 position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="small text-dark">${c.author}</strong>
+                            ${badge}
+                        </div>
+                        <div class="small text-secondary bg-white p-2 rounded shadow-sm border mb-1">
+                            ${c.comment}
+                        </div>
+                        <div class="text-muted" style="font-size: 0.7rem;">
+                            <i class="bi bi-clock me-1"></i>${c.createdAt}
+                        </div>
+                    </div>
+                `;
+            });
+            timelineHtml += '</div>';
+            $('#demoViewTicketTimeline').html(timelineHtml);
+        }
+
+        $(document).on('click', '.view-ticket-btn', function () {
+            const ticketId = parseInt($(this).data('id'));
+            const ticket = (appData.tickets || []).find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            activeTicketId = ticketId;
+            $('#demoUpdateTicketId').val(ticket.id);
+            $('#demoViewTicketNo').text(ticket.ticketNo);
+            $('#demoViewTicketTitle').text(ticket.title);
+            $('#demoViewTicketStatusBadge').html(getTicketStatusBadge(ticket.status));
+            $('#demoViewTicketPriorityBadge').html(getTicketPriorityBadge(ticket.priority));
+            $('#demoViewTicketCategoryBadge').html(getTicketCategoryBadge(ticket.category));
+
+            $('#demoViewTicketJob').text(ticket.jobNo || 'None / General Plant');
+            $('#demoViewTicketClient').text(ticket.clientName || 'None / Internal');
+            $('#demoViewTicketDept').text(ticket.departmentLabel || (ticket.department ? ticket.department.toUpperCase() : 'General'));
+            $('#demoViewTicketAssigned').text(ticket.assignedTo || 'Unassigned');
+            $('#demoViewTicketCreated').text(ticket.createdAt || '--');
+            $('#demoViewTicketTargetDate').text(ticket.targetDate || '--');
+            $('#demoViewTicketDesc').text(ticket.description || '--');
+            $('#demoViewTicketRootCause').text(ticket.rootCause || 'No root cause specified yet.');
+            $('#demoViewTicketCapa').text(ticket.capa || 'No CAPA recorded yet.');
+
+            $('#demoUpdateTicketStatusSelect').val(ticket.status);
+            $('#demoUpdateTicketPrioritySelect').val(ticket.priority);
+            $('#demoUpdateTicketRootCause').val(ticket.rootCause || '');
+            $('#demoUpdateTicketCapa').val(ticket.capa || '');
+
+            renderTicketTimeline(ticket);
+            $('#demoModalTicketDetail').modal('show');
+        });
+
+        $('#demoFormUpdateTicketStatus').on('submit', function (e) {
+            e.preventDefault();
+            const ticket = (appData.tickets || []).find(t => t.id === activeTicketId);
+            if (!ticket) return;
+
+            const oldStatus = ticket.status;
+            const newStatus = $('#demoUpdateTicketStatusSelect').val();
+            const newPriority = $('#demoUpdateTicketPrioritySelect').val();
+            const newRootCause = $('#demoUpdateTicketRootCause').val();
+            const newCapa = $('#demoUpdateTicketCapa').val();
+
+            ticket.status = newStatus;
+            ticket.priority = newPriority;
+            ticket.rootCause = newRootCause;
+            ticket.capa = newCapa;
+
+            const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            if (newStatus === 'resolved' || newStatus === 'closed') {
+                ticket.resolvedAt = nowStr;
+            }
+
+            if (!ticket.comments) ticket.comments = [];
+            ticket.comments.push({
+                id: ticket.comments.length + 1,
+                author: 'Er. Munish Soni (Admin)',
+                actionType: newStatus !== oldStatus ? 'status_change' : 'capa_update',
+                comment: `Updated ticket status to [${newStatus.toUpperCase()}] with priority [${newPriority.toUpperCase()}]. CAPA details updated.`,
+                createdAt: nowStr
+            });
+
+            saveData();
+            renderTickets();
+
+            // Refresh modal views
+            $('#demoViewTicketStatusBadge').html(getTicketStatusBadge(ticket.status));
+            $('#demoViewTicketPriorityBadge').html(getTicketPriorityBadge(ticket.priority));
+            $('#demoViewTicketRootCause').text(ticket.rootCause || 'No root cause specified yet.');
+            $('#demoViewTicketCapa').text(ticket.capa || 'No CAPA recorded yet.');
+            renderTicketTimeline(ticket);
+
+            showToast(`Ticket ${ticket.ticketNo} status updated to ${newStatus.toUpperCase()}`, 'success');
+        });
+
+        $('#demoFormAddTicketComment').on('submit', function (e) {
+            e.preventDefault();
+            const ticket = (appData.tickets || []).find(t => t.id === activeTicketId);
+            if (!ticket) return;
+
+            const author = $('#demoCommentAuthor').val() || 'Er. Munish Soni (Admin)';
+            const actionType = $('#demoCommentActionType').val() || 'comment';
+            const commentText = $('#demoCommentText').val().trim();
+            if (!commentText) return;
+
+            const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+            if (!ticket.comments) ticket.comments = [];
+            ticket.comments.push({
+                id: ticket.comments.length + 1,
+                author: author,
+                actionType: actionType,
+                comment: commentText,
+                createdAt: nowStr
+            });
+
+            saveData();
+            renderTicketTimeline(ticket);
+            renderTickets();
+            $('#demoCommentText').val('');
+            showToast('Update posted to traveler timeline!', 'success');
         });
 
         // Standalone Print Window Trigger

@@ -86,6 +86,9 @@
             <a href="<?= base_url('production/issues') ?>" class="sidebar-nav-link <?= str_contains(uri_string(), 'production/issues') ? 'active' : '' ?>">
                 <i class="bi bi-arrow-right-square"></i> Material Issues
             </a>
+            <a href="<?= base_url('tickets') ?>" class="sidebar-nav-link <?= str_contains(uri_string(), 'tickets') ? 'active' : '' ?>">
+                <i class="bi bi-ticket-perforated"></i> In-Built Tickets &amp; CAPA
+            </a>
 
             <!-- LOGISTICS & DISPATCH -->
             <div class="sidebar-heading">Logistics</div>
@@ -120,7 +123,7 @@
                 <i class="bi bi-sliders"></i> Company Settings
             </a>
             <a href="<?= base_url('integrations') ?>" class="sidebar-nav-link <?= str_contains(uri_string(), 'integrations') ? 'active' : '' ?>">
-                <i class="bi bi-diagram-3"></i> Jira & Slack Integrations
+                <i class="bi bi-diagram-3"></i> External Integrations
             </a>
         </div>
 

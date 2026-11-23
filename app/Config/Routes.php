@@ -191,6 +191,17 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->post('update', 'Settings::update');
     });
 
+    // In-Built Industrial Ticketing & CAPA System
+    $routes->group('tickets', static function ($routes) {
+        $routes->get('', 'Tickets::index');
+        $routes->get('new', 'Tickets::new');
+        $routes->post('create', 'Tickets::create');
+        $routes->get('view/(:num)', 'Tickets::view/$1');
+        $routes->post('update-status/(:num)', 'Tickets::updateStatus/$1');
+        $routes->post('add-comment/(:num)', 'Tickets::addComment/$1');
+        $routes->post('reassign/(:num)', 'Tickets::reassign/$1');
+    });
+
     // Ticketing & Collaboration Integrations (Jira, Slack, Webhooks)
     $routes->group('integrations', static function ($routes) {
         $routes->get('', 'Integrations::index');

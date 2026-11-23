@@ -197,6 +197,24 @@ This ERP is purpose-built to manage the end-to-end lifecycle for fabricators ser
   - Quick-action task modal to link and push custom tasks directly from active Job Orders into ClickUp or Plane lists.
   - Complete transmission audit logging with viewable JSON request/response payloads and offline simulation fallback.
 
+### 20. In-Built Industrial Ticketing & CAPA System (ISO 9001:2015 & AWS D1.1 Compliant)
+* **First-Class Native Shop Floor Issue Tracker**:
+  - Zero external software dependencies required: operates entirely within the ERP database and on-premise infrastructure.
+  - Engineered specifically for heavy steel fabrication tolerances, welding standards (AWS D1.1 / ASME Sec VIII), and statutory plant compliance.
+* **Fabrication-Centric Categories & Workflow Classification**:
+  - **Quality Non-Conformance Reports (NCR)**: Record weld imperfections (porosity, linear slag inclusions, lack of fusion), plate laminations, or fit-up bevel deviations.
+  - **Drawing Requests for Information (RFI)**: Formal engineering queries on client General Arrangement (GA) drawings, gusset plate thickness, and BOM schedules.
+  - **Machinery Breakdown Maintenance**: Emergency downtime ticketing for critical equipment (1000-Ton hydraulic press, CNC oxy-fuel/plasma cutters, SAW tractor gantries, 25T EOT cranes).
+  - **Safety & HSE Incidents**: Statutory crane wire rope inspections, lifting gear fitness, gas cylinder manifold checks, and safety harness audits.
+  - **Client Pre-Dispatch Punch Lists**: Third-Party Inspection (TPI) punch points (BVIS, SGS, TUV, NTPC, Adani, Shree Cement) such as DFT coating touch-ups and stenciling.
+* **Root Cause Analysis (RCA) & CAPA Action Plans**:
+  - Structured 5-Why root cause diagnosis box on every ticket traveler.
+  - Formal Corrective and Preventive Action (CAPA) resolution notes to ensure defect recurrence prevention under ISO 9001 quality audits.
+* **Full Audit Timeline & Multi-Stage Lifecycle**:
+  - Comprehensive event history logging inspector remarks, gouging/reweld verifications, and engineering clarifications.
+  - Status progression workflow: `Open` &rarr; `In Progress` &rarr; `Under Review / TPI` &rarr; `Resolved` &rarr; `Closed & Signed Off`.
+  - Filterable by department (QA/QC, Bay 1 Heavy Fabrication, Bay 2 Vessels, Design, Maintenance, HSE), priority (`Critical`, `Urgent`, `High`, `Medium`, `Low`), and linked Job Orders.
+
 ---
 
 ## 🚀 Installation & Setup Guide
