@@ -247,6 +247,49 @@ if (!function_exists('plant_type_badge')) {
     }
 }
 
+if (!function_exists('ticket_category_badge')) {
+    function ticket_category_badge($category)
+    {
+        $cat = strtolower(trim((string)$category));
+        switch ($cat) {
+            case 'quality_ncr':
+                return '<span class="badge bg-danger"><i class="bi bi-shield-x me-1"></i>Quality NCR</span>';
+            case 'drawing_rfi':
+                return '<span class="badge bg-primary"><i class="bi bi-pencil-ruler me-1"></i>Drawing RFI</span>';
+            case 'machine_breakdown':
+                return '<span class="badge bg-warning text-dark"><i class="bi bi-wrench-adjustable me-1"></i>Breakdown</span>';
+            case 'safety_hazard':
+                return '<span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Safety / HSE</span>';
+            case 'client_punch':
+                return '<span class="badge bg-info text-white"><i class="bi bi-card-checklist me-1"></i>Client Punch</span>';
+            case 'production_delay':
+                return '<span class="badge bg-secondary"><i class="bi bi-hourglass-split me-1"></i>Shopfloor Delay</span>';
+            default:
+                return '<span class="badge bg-secondary"><i class="bi bi-ticket-perforated me-1"></i>' . esc(ucwords(str_replace('_', ' ', $cat))) . '</span>';
+        }
+    }
+}
+
+if (!function_exists('ticket_priority_badge')) {
+    function ticket_priority_badge($priority)
+    {
+        $prio = strtolower(trim((string)$priority));
+        switch ($prio) {
+            case 'critical':
+                return '<span class="badge bg-danger text-white"><i class="bi bi-radioactive me-1"></i>Critical</span>';
+            case 'urgent':
+                return '<span class="badge bg-warning text-dark"><i class="bi bi-lightning-fill me-1"></i>Urgent</span>';
+            case 'high':
+                return '<span class="badge bg-primary"><i class="bi bi-arrow-up-circle-fill me-1"></i>High</span>';
+            case 'medium':
+                return '<span class="badge bg-info text-white"><i class="bi bi-dash-circle-fill me-1"></i>Medium</span>';
+            case 'low':
+            default:
+                return '<span class="badge bg-secondary"><i class="bi bi-arrow-down-circle-fill me-1"></i>Low</span>';
+        }
+    }
+}
+
 if (!function_exists('current_user')) {
     function current_user()
     {
@@ -390,6 +433,27 @@ if (!function_exists('notify_integrations')) {
                         $emailService->notifyInvoice($data);
                     } elseif ($eventType === 'qaqc_ncr_raised') {
                         $emailService->notifyQuality($data);
+                    }
+                }
+            }
+
+            // 4. Dispatch to ClickUp / Open-Source PM (Plane, OpenProject) if subscribed
+            $clickupConfig = $integrationModel->getServiceConfig('clickup');
+            if (!empty($clickupConfig['is_enabled'])) {
+                $clickupEvents = $clickupConfig['events'] ?? [];
+                if (empty($clickupEvents) || in_array($eventType, $clickupEvents)) {
+                    $clickup = new \App\Libraries\ClickUpService();
+                    if ($eventType === 'job_created') {
+                        $clickup->notifyJobCreated($data);
+                    } elseif ($eventType === 'qaqc_ncr_raised') {
+                        $clickup->notifyQualityNCR($data);
+                    } else {
+                        $clickup->createTask([
+                            'name'        => $data['summary'] ?? ($data['title'] ?? "[Steel ERP] {$eventType}"),
+                            'description' => $data['description'] ?? "Automated task triggered by ERP event: {$eventType}",
+                            'priority'    => $data['priority'] ?? 2,
+                            'tags'        => array_merge(['steel-erp', $eventType], $data['labels'] ?? []),
+                        ]);
                     }
                 }
             }

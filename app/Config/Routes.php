@@ -191,19 +191,33 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->post('update', 'Settings::update');
     });
 
+    // In-Built Industrial Ticketing & CAPA System
+    $routes->group('tickets', static function ($routes) {
+        $routes->get('', 'Tickets::index');
+        $routes->get('new', 'Tickets::new');
+        $routes->post('create', 'Tickets::create');
+        $routes->get('view/(:num)', 'Tickets::view/$1');
+        $routes->post('update-status/(:num)', 'Tickets::updateStatus/$1');
+        $routes->post('add-comment/(:num)', 'Tickets::addComment/$1');
+        $routes->post('reassign/(:num)', 'Tickets::reassign/$1');
+    });
+
     // Ticketing & Collaboration Integrations (Jira, Slack, Webhooks)
     $routes->group('integrations', static function ($routes) {
         $routes->get('', 'Integrations::index');
         $routes->post('update-jira', 'Integrations::updateJira');
         $routes->post('update-slack', 'Integrations::updateSlack');
         $routes->post('update-email', 'Integrations::updateEmail');
+        $routes->post('update-clickup', 'Integrations::updateClickup');
         $routes->post('update-webhooks', 'Integrations::updateWebhooks');
         $routes->post('test-jira', 'Integrations::testJira');
         $routes->post('test-slack', 'Integrations::testSlack');
         $routes->post('test-email', 'Integrations::testEmail');
+        $routes->post('test-clickup', 'Integrations::testClickup');
         $routes->post('create-jira-issue', 'Integrations::createJiraIssue');
         $routes->post('send-slack-message', 'Integrations::sendSlackMessage');
         $routes->post('send-email', 'Integrations::sendManualEmail');
+        $routes->post('create-clickup-task', 'Integrations::createClickupTask');
         $routes->get('logs', 'Integrations::logs');
     });
 });

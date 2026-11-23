@@ -1435,7 +1435,8 @@ LOCK TABLES `integrations` WRITE;
 INSERT INTO `integrations` VALUES 
 (1,'jira',1,'{\"host\": \"https://heavysteel.atlassian.net\", \"email\": \"admin@heavysteel.in\", \"api_token\": \"your_jira_api_token\", \"project_key\": \"STEEL\", \"issue_type\": \"Quality NCR\"}','[\"qaqc_ncr_failed\", \"job_created\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
 (2,'slack',1,'{\"webhook_url\": \"https://hooks.slack.com/services/WORKSPACE/CHANNEL/TOKEN\", \"bot_token\": \"\", \"default_channel\": \"#shopfloor-alerts\", \"dispatch_channel\": \"#dispatch-alerts\", \"qc_channel\": \"#qc-ncr-alerts\"}','[\"dispatch_created\", \"job_stage_advanced\", \"qaqc_ncr_raised\", \"invoice_created\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
-(3,'email',1,'{\"smtp_host\": \"smtp.gmail.com\", \"smtp_port\": 587, \"smtp_crypto\": \"tls\", \"smtp_user\": \"notifications@heavysteel.in\", \"smtp_pass\": \"\", \"from_email\": \"notifications@heavysteel.in\", \"from_name\": \"Heavy Steel Fabricators ERP\", \"dispatch_notify_emails\": \"logistics@heavysteel.in\", \"qc_notify_emails\": \"qc@heavysteel.in\", \"accounts_notify_emails\": \"billing@heavysteel.in\"}','[\"dispatch_created\", \"invoice_created\", \"qaqc_ncr_raised\", \"quotation_sent\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
+(3,'email',1,'{\"smtp_host\": \"smtp.gmail.com\", \"smtp_port\": 587, \"smtp_crypto\": \"tls\", \"smtp_user\": \"notifications@heavysteel.in\", \"smtp_pass\": \"\", \"from_email\": \"notifications@heavysteel.in\", \"from_name\": \"Heavy Steel Fabricators ERP\", \"dispatch_notify_emails\": \"logistics@heavysteel.in\", \"qc_notify_emails\": \"qc@heavysteel.in\", \"accounts_notify_emails\": \"billing@heavysteel.in\"}','[\"dispatch_created\", \"invoice_created\", \"qaqc_ncr_raised\", \"quotation_sent\"]','2026-10-28 17:14:10','2026-10-28 17:14:10'),
+(4,'clickup',1,'{\"platform\": \"clickup\", \"api_url\": \"https://api.clickup.com/api/v2\", \"api_token\": \"your_clickup_api_token\", \"team_id\": \"9012345\", \"list_id\": \"901800123456\", \"default_priority\": 2}','[\"job_created\", \"qaqc_ncr_raised\", \"machine_breakdown\"]','2026-10-28 17:14:10','2026-10-28 17:14:10');
 /*!40000 ALTER TABLE `integrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1470,8 +1471,97 @@ LOCK TABLES `integration_logs` WRITE;
 INSERT INTO `integration_logs` VALUES 
 (1,'slack','outbound','dispatch_created','success','{\"challan_no\": \"DC-2627-001\", \"client\": \"NTPC Limited\", \"vehicle\": \"RJ-14-GC-8842\", \"net_weight\": \"20.00 MT\"}',200,'{\"ok\": true, \"channel\": \"#dispatch-alerts\"}','2026-10-22 17:15:00'),
 (2,'jira','outbound','qaqc_ncr_raised','success','{\"issue_key\": \"STEEL-1042\", \"summary\": \"UT Weld Joint Slag defect on ESP Panel\", \"project\": \"STEEL\"}',201,'{\"id\": \"10542\", \"key\": \"STEEL-1042\"}','2026-10-26 14:30:00'),
-(3,'email','outbound','dispatch_advice','success','{\"to\": \"procurement.ramagundam@ntpc.co.in\", \"challan_no\": \"DC-2627-001\", \"net_weight\": \"20.00 MT\", \"vehicle\": \"RJ-14-GC-8842\"}',250,'Message accepted for delivery','2026-10-22 17:16:00');
+(3,'email','outbound','dispatch_advice','success','{\"to\": \"procurement.ramagundam@ntpc.co.in\", \"challan_no\": \"DC-2627-001\", \"net_weight\": \"20.00 MT\", \"vehicle\": \"RJ-14-GC-8842\"}',250,'Message accepted for delivery','2026-10-22 17:16:00'),
+(4,'clickup','outbound','create_task','success','{\"name\": \"[JOB-2627-001] Shop Floor Traveler: ESP Casing Panels\", \"list_id\": \"901800123456\", \"priority\": 2}',201,'{\"id\": \"clk_8692a7f\", \"status\": {\"status\": \"to do\"}}','2026-10-26 15:10:00');
 /*!40000 ALTER TABLE `integration_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tickets`
+--
+
+DROP TABLE IF EXISTS `tickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tickets` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `ticket_no` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` enum('quality_ncr','drawing_rfi','machine_breakdown','production_delay','safety_hazard','client_punch','general') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'quality_ncr',
+  `priority` enum('low','medium','high','urgent','critical') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
+  `status` enum('open','in_progress','under_review','resolved','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
+  `job_id` int unsigned DEFAULT NULL,
+  `client_id` int unsigned DEFAULT NULL,
+  `department` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'qa_qc',
+  `assigned_to` int unsigned DEFAULT NULL,
+  `created_by` int unsigned DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `root_cause` text COLLATE utf8mb4_unicode_ci,
+  `resolution_notes` text COLLATE utf8mb4_unicode_ci,
+  `target_date` date DEFAULT NULL,
+  `resolved_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_ticket_no` (`ticket_no`),
+  KEY `idx_ticket_status` (`status`),
+  KEY `idx_ticket_category` (`category`),
+  KEY `idx_ticket_job` (`job_id`),
+  KEY `idx_ticket_client` (`client_id`),
+  KEY `idx_ticket_assigned` (`assigned_to`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tickets`
+--
+
+LOCK TABLES `tickets` WRITE;
+/*!40000 ALTER TABLE `tickets` DISABLE KEYS */;
+INSERT INTO `tickets` VALUES 
+(1,'TCK-2627-001','UT Slag Inclusion on 32mm ESP Casing Weld Joint WJ-01','quality_ncr','urgent','in_progress',1,1,'qa_qc',4,1,'During 100% Ultrasonic Testing (UT) as per AWS D1.1 on NTPC 800MW ESP Casing panel Joint WJ-01, linear slag inclusion of length 24mm detected at depth 14mm in SAW root pass. Requires carbon arc gouging and re-examination by TPI agency.','Weld flux trapping during high-speed SAW tractor pass on bevel angle 45 deg.','Gouging completed to sound parent metal. Dye-penetrant test confirmed slag removal. Reweld in progress with 4mm E7018 low-hydrogen electrodes.','2026-11-05',NULL,'2026-10-26 14:15:00','2026-10-27 10:30:00'),
+(2,'TCK-2627-002','RFI: Gusset Plate Thickness Clarification for Cyclone Preheater','drawing_rfi','high','under_review',2,6,'design_engineering',3,2,'Drawing DWG-SHREE-CYC-04 shows connection gusset plate thickness as 16mm in section A-A but 20mm in bill of materials for White Cement Kiln-2 Cyclone Preheater. Requesting formal engineering confirmation from Shree Cement design team before CNC oxy-fuel cutting.','Drawing revision typo between structural detail and BOM schedule.','Submitted formal RFI #DCR-88 to Shree Cement consulting engineers. Awaiting signed revision approval.','2026-11-02',NULL,'2026-10-27 09:30:00','2026-10-28 11:20:00'),
+(3,'TCK-2627-003','1000-Ton Hydraulic Plate Press Hydraulic Oil Seal Leakage','machine_breakdown','critical','resolved',1,NULL,'maintenance',5,4,'Main cylinder packing seal on Bay 1 1000-ton hydraulic bending press ruptured under 250 bar pressure while rolling 50mm SA 516 Gr 70 boiler plate shells. Shell rolling halted on Job order JOB-2627-001.','Hydraulic oil seal degradation after 1800 running hours without intermediate pressure relief valve check.','Replaced primary piston polyurethane seal kit and backup rings. Flushed ISO VG 68 hydraulic oil. Pressure tested to 300 bar for 45 minutes without drop. Press released for production.','2026-10-29','2026-10-29 16:45:00','2026-10-28 08:15:00','2026-10-29 16:45:00'),
+(4,'TCK-2627-004','Overhead EOT Crane 25T Hoist Wire Rope Rigging Inspection','safety_hazard','medium','closed',NULL,NULL,'safety_hse',5,1,'Monthly statutory wire rope inspection of 25T EOT Crane in Heavy Bay 2 revealed 3 broken outer wires near equalizer sheave. Required immediate crane lockout and wire rope replacement prior to lifting 20 MT casing assemblies.','Normal fatigue wear from multi-shift heavy girder tilting maneuvers.','Replaced 24mm 6x36 IWRC steel wire rope. Conducted proof load test with 31.25 MT test weight (125% safe working load). Third-party safety fitness certificate issued by Government approved inspector.','2026-10-30','2026-10-30 18:00:00','2026-10-28 12:00:00','2026-10-30 18:00:00'),
+(5,'TCK-2627-005','Pre-Dispatch DFT Dry Film Thickness Punch Point for Adani STPP','client_punch','high','open',NULL,2,'qa_qc',4,3,'Client pre-shipment inspection engineer (Adani Power) flagged that bottom flange underside paint thickness on 4 girder assemblies measures 110 microns against specified 150 microns PU topcoat (RAL 7035). Requires additional coat before gate release.','Inadequate spray overlap under bottom flange shadow area during high-build epoxy application.','Touch-up airless spray painting scheduled in Bay 2 painting booth after surface degreasing. Clearance inspection booked for tomorrow morning.','2026-11-08',NULL,'2026-10-28 15:00:00','2026-10-28 15:00:00');
+/*!40000 ALTER TABLE `tickets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ticket_comments`
+--
+
+DROP TABLE IF EXISTS `ticket_comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ticket_comments` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `ticket_id` int unsigned NOT NULL,
+  `user_id` int unsigned DEFAULT NULL,
+  `user_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type` enum('comment','status_change','capa_update','assignment') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'comment',
+  `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_comment_ticket` (`ticket_id`),
+  CONSTRAINT `fk_comment_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ticket_comments`
+--
+
+LOCK TABLES `ticket_comments` WRITE;
+/*!40000 ALTER TABLE `ticket_comments` DISABLE KEYS */;
+INSERT INTO `ticket_comments` VALUES 
+(1,1,1,'Munish Soni (Admin)','comment','Urgent notification dispatched to Bay 1 Welding Foreman and Quality QA Manager. Gouging team mobilized.','2026-10-26 14:30:00'),
+(2,1,4,'Rajesh Sharma (Welding Inspector)','capa_update','Carbon arc gouging completed. Dye-penetrant test shows defect completely eliminated. Preheat maintained at 150 deg C with ceramic heating pads. Rewelding in progress.','2026-10-27 10:30:00'),
+(3,2,3,'Amit Verma (Design Lead)','comment','Drafted formal Engineering Query memo to Shree Cement head office with marked-up GA drawings.','2026-10-27 11:45:00'),
+(4,3,5,'Suresh Kumar (Maintenance Lead)','status_change','Changed status from OPEN to IN PROGRESS. Hydraulic cylinder uncoupled from gantry for seal overhaul.','2026-10-28 09:00:00'),
+(5,3,5,'Suresh Kumar (Maintenance Lead)','capa_update','Seal kit replaced. Hydraulic pressure tested to 300 bar for 45 mins. Machine certified and released for 50mm shell plate bending.','2026-10-29 16:45:00'),
+(6,4,5,'Suresh Kumar (Maintenance Lead)','status_change','Overhead Crane 25T proof load tested with 31.25 MT load and cleared by Chief Factory Inspector. Ticket closed.','2026-10-30 18:00:00');
+/*!40000 ALTER TABLE `ticket_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

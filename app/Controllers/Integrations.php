@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Libraries\JiraService;
 use App\Libraries\SlackService;
 use App\Libraries\EmailService;
+use App\Libraries\ClickUpService;
 use App\Models\IntegrationLogModel;
 use App\Models\IntegrationModel;
 use App\Models\ProductionJobModel;
@@ -26,6 +27,7 @@ class Integrations extends BaseController
         $jira = $this->integrationModel->getServiceConfig('jira');
         $slack = $this->integrationModel->getServiceConfig('slack');
         $email = $this->integrationModel->getServiceConfig('email');
+        $clickup = $this->integrationModel->getServiceConfig('clickup');
         $webhooks = $this->integrationModel->getServiceConfig('webhooks');
         $logs = $this->logModel->getRecent(20);
 
@@ -41,6 +43,7 @@ class Integrations extends BaseController
             'jira'             => $jira,
             'slack'            => $slack,
             'email'            => $email,
+            'clickup'          => $clickup,
             'webhooks'         => $webhooks,
             'logs'             => $logs,
             'recentJobs'       => $recentJobs,
@@ -161,6 +164,70 @@ class Integrations extends BaseController
             return redirect()->to('/integrations#tab-email')->with('success', $result['message']);
         }
         return redirect()->to('/integrations#tab-email')->with('error', $result['message']);
+    }
+
+    public function updateClickup()
+    {
+        $isEnabled = (bool)$this->request->getPost('is_enabled');
+        $config = [
+            'platform'         => trim((string)$this->request->getPost('platform')) ?: 'clickup',
+            'api_url'          => trim((string)$this->request->getPost('api_url')) ?: 'https://api.clickup.com/api/v2',
+            'api_token'        => trim((string)$this->request->getPost('api_token')),
+            'team_id'          => trim((string)$this->request->getPost('team_id')),
+            'list_id'          => trim((string)$this->request->getPost('list_id')),
+            'default_priority' => (int)($this->request->getPost('default_priority') ?: 2),
+        ];
+        $events = (array)$this->request->getPost('events');
+
+        $this->integrationModel->saveServiceConfig('clickup', $isEnabled, $config, $events);
+        log_activity('Integrations', 'Updated ClickUp & Open-Source PM integration settings');
+
+        return redirect()->to('/integrations#tab-clickup')->with('success', 'ClickUp & Open-Source PM settings saved successfully.');
+    }
+
+    public function testClickup()
+    {
+        $clickupService = new ClickUpService();
+        $result = $clickupService->testConnection();
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($result);
+        }
+
+        if ($result['success']) {
+            return redirect()->to('/integrations#tab-clickup')->with('success', $result['message']);
+        }
+        return redirect()->to('/integrations#tab-clickup')->with('error', $result['message']);
+    }
+
+    public function createClickupTask()
+    {
+        $clickupService = new ClickUpService();
+        $name = trim((string)$this->request->getPost('name'));
+        $description = trim((string)$this->request->getPost('description'));
+        $priority = (int)($this->request->getPost('priority') ?: 2);
+        $tags = explode(',', (string)$this->request->getPost('tags'));
+        $tags = array_filter(array_map('trim', $tags));
+
+        if (empty($name)) {
+            return redirect()->to('/integrations#tab-clickup')->with('error', 'Task name is required.');
+        }
+
+        $result = $clickupService->createTask([
+            'name'        => $name,
+            'description' => $description,
+            'priority'    => $priority,
+            'tags'        => $tags,
+        ]);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($result);
+        }
+
+        if ($result['success']) {
+            return redirect()->to('/integrations#tab-clickup')->with('success', $result['message']);
+        }
+        return redirect()->to('/integrations#tab-clickup')->with('error', $result['message']);
     }
 
     public function testJira()
